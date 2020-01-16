@@ -1,0 +1,11 @@
+@import '_base.scss';
+
+.articleBox {
+    display: flex;
+    flex-direction: column;
+}
+
+.articleTable {
+    flex: 1;
+    overflow-y: hidden;
+}

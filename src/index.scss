@@ -1,0 +1,39 @@
+@import '_base.scss';
+
+:global {
+
+    html,
+    body {
+        width: 100%;
+        height: 100%;
+    }
+
+    #app {
+        display: flex;
+        position: relative;
+        width: 100%;
+        height: 100%;
+        flex-direction: column;
+    }
+
+    svg,
+    svg path {
+        fill: currentcolor;
+    }
+
+    .center-table {
+        table td {
+            text-align: center;
+        }
+
+        .ant-table-thead>tr>th {
+            text-align: center;
+        }
+    }
+
+    .control-box {
+        .ant-col {
+            margin-bottom: 18px;
+        }
+    }
+}
