@@ -2,8 +2,8 @@
 module.exports = {
     extends: ['stylelint-prettier/recommended', 'stylelint-config-ydj/scss', 'stylelint-config-ydj/prettier'],
     rules: {
-        // 'prettier/prettier': false,
-        // 'selector-pseudo-class-no-unknown': [true, { ignorePseudoClasses: ['global', 'local'] }],
-        // 'property-no-unknown': [true, { ignoreProperties: ['composes'] }]
+        'prettier/prettier': false,
+        'selector-pseudo-class-no-unknown': [true, { ignorePseudoClasses: ['global', 'local'] }],
+        'property-no-unknown': [true, { ignoreProperties: ['composes'] }]
     }
 }

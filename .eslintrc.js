@@ -11,7 +11,7 @@ module.exports = {
     ],
     parserOptions: {
         // Allows for the parsing of modern ECMAScript features
-        ecmaVersion: 2018,
+        ecmaVersion: 2020,
         // Allows for the use of imports
         sourceType: 'module',
         ecmaFeatures: {
