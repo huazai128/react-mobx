@@ -5,6 +5,7 @@ const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin')
 const WorkboxPlugin = require('workbox-webpack-plugin')
 const MomentLocalesPlugin = require('moment-locales-webpack-plugin')
 const { TypedCssModulesPlugin } = require('typed-css-modules-webpack-plugin')
+const WorkerPlugin = require('worker-plugin')
 const { compilerHooks } = require('./custom-plugins')
 const constants = require('./constants')
 const config = require('./config')
@@ -28,7 +29,8 @@ const basePlugins = [
     new webpack.DefinePlugin(defineEnv),
     new TypedCssModulesPlugin({
         globPattern: 'src/!(styles)/**/*.scss'
-    })
+    }),
+    new WorkerPlugin()
 ]
 
 const devPlugins = [

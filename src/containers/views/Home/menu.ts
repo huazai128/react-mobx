@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-08-30 13:58:35
- * @LastEditTime: 2019-10-25 14:08:40
+ * @LastEditTime: 2020-04-14 18:11:18
  * @LastEditors: Please set LastEditors
  */
 import Loadable from 'react-loadable'
@@ -16,6 +16,7 @@ export const asynchronousComponents = {
     Article: loadComponent(() => import(/* webpackChunkName: "article" */ '@views/Article')),
     EditArticle: loadComponent(() => import(/* webpackChunkName: "addArticle" */ '@views/EditArticle')),
     SocketDebugger: loadComponent(() => import(/* webpackChunkName: "socket-debugger" */ '@views/SocketDebugger')),
+    Canvas: loadComponent(() => import(/* webpackChunkName: "like" */ '@views/Canvas/Like')),
     Users: loadComponent(() => import(/* webpackChunkName: "users" */ '@views/Users'))
 }
 
@@ -81,6 +82,14 @@ export const menu: IMenu[] = [
     },
     {
         id: 3,
+        path: '/canvas',
+        title: 'Canvas相关知识',
+        icon: 'book',
+        component: 'Canvas',
+        exact: true
+    },
+    {
+        id: 4,
         path: '/users',
         title: '用户管理',
         icon: 'user',
