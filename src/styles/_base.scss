@@ -5,5 +5,15 @@
 
 @import './_var.scss';
 
+// iconfont
+@font-face {
+    font-family: 'iconfont'; /* project id 1756307 */
+    src: url('//at.alicdn.com/t/font_1756307_kdkwn777u8g.eot');
+    src: url('//at.alicdn.com/t/font_1756307_kdkwn777u8g.eot?#iefix') format('embedded-opentype'),
+        url('//at.alicdn.com/t/font_1756307_kdkwn777u8g.woff2') format('woff2'),
+        url('//at.alicdn.com/t/font_1756307_kdkwn777u8g.woff') format('woff'),
+        url('//at.alicdn.com/t/font_1756307_kdkwn777u8g.ttf') format('truetype'),
+        url('//at.alicdn.com/t/font_1756307_kdkwn777u8g.svg#iconfont') format('svg');
+}
 // -------- bourbon --------
 @import '~bourbon/core/_bourbon.scss';
