@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-04-14 18:21:12
- * @LastEditTime: 2020-04-29 14:10:02
+ * @LastEditTime: 2020-04-30 11:20:19
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /react-mobx1/src/containers/views/Canvas/Like/like.worker.ts
@@ -44,7 +44,7 @@ class ThumbsUpAni {
         imgs.forEach((img: string) => {
             const p = new Promise((resolve, reject) => {
                 // 用于处理图片数据，用于离屏画图
-                return fetch(img)
+                fetch(img)
                     .then(response => response.blob())
                     .then(blob => resolve(createImageBitmap(blob)))
             })
@@ -53,7 +53,6 @@ class ThumbsUpAni {
         // 这里处理有点慢
         Promise.all(promiseAll)
             .then(lists => {
-                console.log(lists, '======listImage')
                 this.listImage = lists.filter((img: ImageData) => img && img.width > 0)
             })
             .catch(err => {

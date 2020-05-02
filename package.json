@@ -34,6 +34,7 @@
         "canvas-webworker": "0.0.3",
         "eslint-plugin-react-hooks": "^2.2.0",
         "eventemitter3": "4.0.0",
+        "flv.js": "^1.5.0",
         "hooxjs": "^0.3.0",
         "lodash": "4.17.15",
         "mobx": "5.13.1",
@@ -134,7 +135,8 @@
         "webpack-cli": "3.3.9",
         "webpack-dev-server": "3.8.1",
         "webpack-hot-middleware": "^2.25.0",
-        "workbox-webpack-plugin": "^4.3.1"
+        "workbox-webpack-plugin": "^4.3.1",
+        "worker-plugin": "^4.0.2"
     },
     "browserslist": [
         "> 1%",

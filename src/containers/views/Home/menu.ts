@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-08-30 13:58:35
- * @LastEditTime: 2020-04-14 18:11:18
+ * @LastEditTime: 2020-05-01 21:22:06
  * @LastEditors: Please set LastEditors
  */
 import Loadable from 'react-loadable'
@@ -16,7 +16,8 @@ export const asynchronousComponents = {
     Article: loadComponent(() => import(/* webpackChunkName: "article" */ '@views/Article')),
     EditArticle: loadComponent(() => import(/* webpackChunkName: "addArticle" */ '@views/EditArticle')),
     SocketDebugger: loadComponent(() => import(/* webpackChunkName: "socket-debugger" */ '@views/SocketDebugger')),
-    Canvas: loadComponent(() => import(/* webpackChunkName: "like" */ '@views/Canvas/Like')),
+    Like: loadComponent(() => import(/* webpackChunkName: "like" */ '@views/Canvas/Like')),
+    Card: loadComponent(() => import(/* webpackChunkName: "card" */ '@views/Canvas/Card')),
     Users: loadComponent(() => import(/* webpackChunkName: "users" */ '@views/Users'))
 }
 
@@ -85,7 +86,25 @@ export const menu: IMenu[] = [
         path: '/canvas',
         title: 'Canvas相关知识',
         icon: 'book',
-        component: 'Canvas',
+        component: 'Like',
+        exact: true
+    },
+    {
+        pid: 3,
+        id: 30,
+        path: '/like',
+        title: '点赞动画',
+        icon: 'book',
+        component: 'Like',
+        exact: true
+    },
+    {
+        pid: 3,
+        id: 31,
+        path: '/card',
+        title: '通用画卡',
+        icon: 'book',
+        component: 'Card',
         exact: true
     },
     {

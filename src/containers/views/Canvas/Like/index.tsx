@@ -3,8 +3,7 @@ import { requestFrame } from '@utils/util'
 import * as styles from './style.scss'
 
 interface LinkProps {}
-type Loop<R> = (diffTime: number) => R
-
+type Loop<T, R> = (diffTime: T) => R
 let thumbsInter: any = null
 
 /**
@@ -145,7 +144,7 @@ class ThumbsUpAni {
     }
 
     // 绘制
-    private createRender(): Loop<boolean | void> {
+    private createRender(): Loop<number, boolean | void> {
         if (!this.listImage.length) return null
         // 一下是在创建时，初始化默认值
         const context = this.ctx
