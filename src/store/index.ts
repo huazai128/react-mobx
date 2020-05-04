@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-08-30 13:58:35
- * @LastEditTime: 2020-05-04 10:56:32
+ * @LastEditTime: 2020-05-04 11:02:25
  * @LastEditors: Please set LastEditors
  */
 import { RouterStore } from 'mobx-react-router'
@@ -20,5 +20,3 @@ export { default as tagStore } from './tagStore'
 export { default as articleStore } from './articleStore'
 
 export { default as uploadStore } from './uploadStore'
-
-export { default as searchStore } from './searchStore'
