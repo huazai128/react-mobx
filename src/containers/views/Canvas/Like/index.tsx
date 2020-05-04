@@ -18,7 +18,7 @@ const Link: React.FC<LinkProps> = ({  }: LinkProps) => {
     const [thumbsStart, setTumbsStart] = useState<number>(0)
     const [newWorker, setNewWorker] = useState<Worker>(null)
     useEffect(() => {
-        init()
+        // init()
     }, [])
     const init = async () => {
         const worker = new Worker('./like.worker', { type: 'module' })

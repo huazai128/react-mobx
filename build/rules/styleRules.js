@@ -34,12 +34,7 @@ const lessLoader = {
     }
 }
 
-const baseLoaders = modules => [
-    config.extractCss ? MiniCssExtractPlugin.loader : 'style-loader',
-    cacheLoader,
-    cssLoader(modules),
-    'postcss-loader'
-]
+const baseLoaders = modules => [config.extractCss ? MiniCssExtractPlugin.loader : 'style-loader', cacheLoader, cssLoader(modules), 'postcss-loader']
 
 module.exports = [
     {

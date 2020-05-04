@@ -2,14 +2,12 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-08-30 13:58:35
- * @LastEditTime: 2019-10-30 10:38:11
+ * @LastEditTime: 2020-05-04 10:56:32
  * @LastEditors: Please set LastEditors
  */
 import { RouterStore } from 'mobx-react-router'
 
 export const routerStore = new RouterStore()
-
-export { default as socketStore } from './socketStore'
 
 export { default as globalStore } from './globalStore'
 

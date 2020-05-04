@@ -31,6 +31,7 @@
         "axios": "^0.19.0",
         "bourbon": "6.0.0",
         "braft-editor": "^2.3.8",
+        "broadway": "^4.1.0",
         "canvas-webworker": "0.0.3",
         "eslint-plugin-react-hooks": "^2.2.0",
         "eventemitter3": "4.0.0",

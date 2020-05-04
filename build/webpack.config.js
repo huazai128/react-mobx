@@ -19,7 +19,8 @@ const conf = {
         filename: constants.APP_ENV === 'dev' ? '[name].js' : assetsPath('js/[name].[chunkhash].js'),
         chunkFilename: constants.APP_ENV === 'dev' ? '[name].js' : assetsPath('js/[name].[id].[chunkhash].js'),
         publicPath: config.assetsPublicPath,
-        pathinfo: false
+        pathinfo: false,
+        globalObject: 'self'
     },
     resolve: {
         extensions: constants.FILE_EXTENSIONS,

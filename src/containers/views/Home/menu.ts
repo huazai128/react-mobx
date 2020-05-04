@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-08-30 13:58:35
- * @LastEditTime: 2020-05-01 21:22:06
+ * @LastEditTime: 2020-05-04 10:57:32
  * @LastEditors: Please set LastEditors
  */
 import Loadable from 'react-loadable'
@@ -15,9 +15,10 @@ export const asynchronousComponents = {
     Tags: loadComponent(() => import(/* webpackChunkName: "tags" */ '@views/Tags')),
     Article: loadComponent(() => import(/* webpackChunkName: "article" */ '@views/Article')),
     EditArticle: loadComponent(() => import(/* webpackChunkName: "addArticle" */ '@views/EditArticle')),
-    SocketDebugger: loadComponent(() => import(/* webpackChunkName: "socket-debugger" */ '@views/SocketDebugger')),
     Like: loadComponent(() => import(/* webpackChunkName: "like" */ '@views/Canvas/Like')),
     Card: loadComponent(() => import(/* webpackChunkName: "card" */ '@views/Canvas/Card')),
+    Rtmp: loadComponent(() => import(/* webpackChunkName: "rtmp" */ '@views/LiveVideo/Rtmp')),
+    Broadway: loadComponent(() => import(/* webpackChunkName: "broadway" */ '@views/LiveVideo/Broadway')),
     Users: loadComponent(() => import(/* webpackChunkName: "users" */ '@views/Users'))
 }
 
@@ -109,6 +110,32 @@ export const menu: IMenu[] = [
     },
     {
         id: 4,
+        path: '/live',
+        title: '直播',
+        icon: 'book',
+        component: 'Rtmp',
+        exact: true
+    },
+    {
+        pid: 4,
+        id: 41,
+        path: '/rtmp',
+        title: 'RTMP直播',
+        icon: 'book',
+        component: 'Rtmp',
+        exact: true
+    },
+    {
+        pid: 4,
+        id: 42,
+        path: '/broadway',
+        title: 'Broadway直播',
+        icon: 'book',
+        component: 'Broadway',
+        exact: true
+    },
+    {
+        id: 5,
         path: '/users',
         title: '用户管理',
         icon: 'user',

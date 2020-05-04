@@ -27,9 +27,9 @@ const basePlugins = [
         localesToKeep: ['es-us', 'zh-cn']
     }),
     new webpack.DefinePlugin(defineEnv),
-    new TypedCssModulesPlugin({
-        globPattern: 'src/!(styles)/**/*.scss'
-    }),
+    // new TypedCssModulesPlugin({
+    //     globPattern: 'src/!(styles)/**/*.scss'
+    // }),
     new WorkerPlugin()
 ]
 
@@ -44,7 +44,7 @@ const devPlugins = [
 ]
 
 const prodPlugins = [
-    new webpack.WatchIgnorePlugin([/css\.d\.ts$/]),
+    new webpack.WatchIgnorePlugin([/css\.d\.ts$/, /flv.js/]),
     new HtmlWebpackPlugin({
         filename: config.index,
         template: 'build/tpl/index.html',
