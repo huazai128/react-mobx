@@ -56,6 +56,8 @@ const Rtmp: React.FC<any> = () => {
                     RTMP有个弱点就是累积误差，原因是RTMP基于TCP不会丢包。所以当网络状态差时，服务器会将包缓存起来，导致累积的延迟；待网络状况好了，就一起发给客户端。这个的对策就是，当客户端的缓冲区很大，就断开重连。当然SRS也提供配置。
                 </p>
                 <p>7、FFmpeg 支持很多直播流格式，但不支持 Web Sockets，解决方案是用 FFmpeg 开一个 HTTP 直播流，再开个 Node 服务转一下。 或者通过node-media-server插件穿件一个服务。</p>
+                <p>8、视频优化： https://www.jianshu.com/p/2dc13e97ceac</p>
+                <p>9、微信video一些坑： https://doubleray.top/2018/02/01/daily-h5-video/</p>
             </div>
             <PhonePage className="flex-1">
                 <video ref={videoRef} controls preload="auto" autoPlay loop webkit-playsinline="true" x5-video-player-type="h5" x5-video-player-fullscreen="true"></video>

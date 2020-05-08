@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-08-30 13:58:35
- * @LastEditTime: 2020-05-04 10:57:32
+ * @LastEditTime: 2020-05-07 14:05:54
  * @LastEditors: Please set LastEditors
  */
 import Loadable from 'react-loadable'
@@ -19,6 +19,7 @@ export const asynchronousComponents = {
     Card: loadComponent(() => import(/* webpackChunkName: "card" */ '@views/Canvas/Card')),
     Rtmp: loadComponent(() => import(/* webpackChunkName: "rtmp" */ '@views/LiveVideo/Rtmp')),
     Broadway: loadComponent(() => import(/* webpackChunkName: "broadway" */ '@views/LiveVideo/Broadway')),
+    Yuv: loadComponent(() => import(/* webpackChunkName: "broadway" */ '@views/LiveVideo/Yuv')),
     Users: loadComponent(() => import(/* webpackChunkName: "users" */ '@views/Users'))
 }
 
@@ -132,6 +133,15 @@ export const menu: IMenu[] = [
         title: 'Broadway直播',
         icon: 'book',
         component: 'Broadway',
+        exact: true
+    },
+    {
+        pid: 4,
+        id: 43,
+        path: '/yuv',
+        title: 'Yuv直播',
+        icon: 'book',
+        component: 'Yuv',
         exact: true
     },
     {

@@ -18,7 +18,7 @@ const Link: React.FC<LinkProps> = ({  }: LinkProps) => {
     const [thumbsStart, setTumbsStart] = useState<number>(0)
     const [newWorker, setNewWorker] = useState<Worker>(null)
     useEffect(() => {
-        // init()
+        init()
     }, [])
     const init = async () => {
         const worker = new Worker('./like.worker', { type: 'module' })
@@ -37,10 +37,12 @@ const Link: React.FC<LinkProps> = ({  }: LinkProps) => {
     }
     const postLike = useCallback(() => {
         if ('OffscreenCanvas' in window) {
+            console.log(newWorker, 'newWorker')
             newWorker.postMessage({ num: 10 })
         } else {
             thumbsUp(10)
         }
+        thumbsUp(10)
     }, [cavasAni, praiseLast, newWorker])
     // 处理大量数据绘制重叠问题
     const thumbsUp = (num: number) => {
