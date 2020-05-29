@@ -22,7 +22,7 @@ function Yuv() {
             const data = evt.data
             if (typeof data != 'string') {
                 queue.push(data) // 把二进制数据存储到列队中
-                // 如果列队中数据，并且没有触发开始
+                // 如果列队中数据，并且没有触发开始, 这里拉取的流没有直接渲染 而是通过requestAnimationFrame(即16.66ms 渲染)来绘制。 这样避免过快或者过慢的渲染导致bug
                 if (!schedued) {
                     schedue()
                     schedued = true
@@ -48,11 +48,11 @@ function Yuv() {
         // 判断是否存在值
         if (data) {
             render(new Uint8Array(data))
-            // 减少渲染延迟问题, 当列队中有多个数据时，延迟就会很严重
+            // 减少渲染延迟问题, 当列队中有多个数据时，延迟就会很严重,此时清空列队
             if (queue.length > 5) {
                 queue = []
             }
-            requestAnimationFrame(schedue)
+            requestAnimationFrame(schedue) // 通过requestAnimationFrame提供流；  而不是直接拿到socket的流直接渲染；
         } else {
             // 没有数据关闭渲染通道
             schedued = false
@@ -62,7 +62,6 @@ function Yuv() {
     const render = data => {
         if (renderer === null) return false
         const { width, height } = canvasRef.current
-        console.log(width, height)
         renderer.renderImg(width, height, data)
     }
     return (
@@ -72,6 +71,16 @@ function Yuv() {
                 <p>1、YUV https://juejin.im/post/5e8e714f6fb9a03c832b089c#heading-10</p>
                 <p>2、YUV使用 https://juejin.im/post/5de29d7be51d455f9b335efa</p>
                 <p>3、直播录制相关文章：https://aotu.io/notes/2016/10/09/HTML5-SopCast/</p>
+                <p>
+                    4、ffmpeg命令分析： ffmpeg -f avfoundation -r 30 -i "FaceTime HD Camera" -f rawvideo -c:v rawvideo -pix_fmt yuv420p "http://localhost:9000/push?id=test&width=320&height=240"
+                    <span>-f avfoundation -r 30 -i "FaceTime HD Camera" 表示从 FaceTime HD Camera 中以 30 fps 的帧率采集视频</span>
+                    <span>-f rawvideo 指视频的封装格式，为</span>
+                    <span>-c:v rawvideo 表示输出视频编码格式为原始状态， 不进行解码</span>
+                    <span>
+                        主要参数： -i 设定输入流 -f 设定输出格式 -ss 开始时间 视频参数： -b 设定视频流量，默认为200Kbit/s -r 设定帧速率，默认为25 -s 设定画面的宽与高 -aspect 设定画面的比例 -vn 不处理视频 -vcodec
+                        设定视频编解码器，未设定时则使用与输入流相同的编解码器 音频参数： -ar 设定采样率 -ac 设定声音的Channel数 -acodec 设定声音编解码器，未设定时则使用与输入流相同的编解码器 -an 不处理音频
+                    </span>
+                </p>
             </div>
             <PhonePage className="flex-1">
                 <canvas ref={canvasRef}></canvas>

@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-08-30 13:58:35
- * @LastEditTime: 2019-10-29 19:33:25
+ * @LastEditTime: 2020-05-27 22:22:12
  * @LastEditors: Please set LastEditors
  */
 import { RouterStore as _RouterStore } from 'mobx-react-router'
@@ -30,6 +30,7 @@ declare global {
         tagStore: ITagStore.TagStore
         articleStore: IArticleStore.ArticleStore
         searchStore: ISearchStore.SearchStore
+        cardStore: ICardStore.CardStore
         routerStore: RouterStore
     }
 }

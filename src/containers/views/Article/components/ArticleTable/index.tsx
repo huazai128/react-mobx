@@ -93,22 +93,14 @@ function ActicleTable({ scrollY }: ActicleTableProps) {
                     title="发布状态"
                     width={120}
                     dataIndex="state"
-                    render={(_, record) => (
-                        <React.Fragment>
-                            {record.state == 0 ? '草稿' : record.state == -1 ? '回收站' : '已发布'}
-                        </React.Fragment>
-                    )}
+                    render={(_, record) => <React.Fragment>{record.state == 0 ? '草稿' : record.state == -1 ? '回收站' : '已发布'}</React.Fragment>}
                 />
                 <Table.Column<IArticleStore.IArticle>
                     key="public"
                     width={120}
                     title="公开状态"
                     dataIndex="public"
-                    render={(_, record) => (
-                        <React.Fragment>
-                            {record.public == 0 ? '需要密码' : record.public == -1 ? '私密' : '公开状态'}
-                        </React.Fragment>
-                    )}
+                    render={(_, record) => <React.Fragment>{record.public == 0 ? '需要密码' : record.public == -1 ? '私密' : '公开状态'}</React.Fragment>}
                 />
                 <Table.Column<IArticleStore.IArticle>
                     key="meta"
