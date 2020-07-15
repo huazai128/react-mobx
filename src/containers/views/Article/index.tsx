@@ -8,9 +8,7 @@ export default function Article() {
     return (
         <div className={styles.articleBox}>
             <Header />
-            <AutoSizer className={styles.articleTable}>
-                {({ height }) => <ArticleTable scrollY={height - 120} />}
-            </AutoSizer>
+            <AutoSizer className={styles.articleTable}>{({ height }) => <ArticleTable scrollY={height - 120} />}</AutoSizer>
         </div>
     )
 }

@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-05-26 22:26:35
- * @LastEditTime: 2020-05-28 19:01:22
+ * @LastEditTime: 2020-05-29 10:21:38
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /react-mobx1/src/store/cardStore/index.ts
@@ -75,6 +75,7 @@ export class CardStore extends StoreExt {
     @action
     public changeImgParams(e: React.ChangeEvent<HTMLInputElement>, type: string) {
         this.imgParams[type] = e.target.value
+        this.canvasDrew.changeDrew('drawImg', this.imgParams)
     }
 
     @action
