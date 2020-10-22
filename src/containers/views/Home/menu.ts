@@ -2,11 +2,10 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-08-30 13:58:35
- * @LastEditTime: 2020-05-07 14:05:54
+ * @LastEditTime: 2020-10-13 18:23:19
  * @LastEditors: Please set LastEditors
  */
 import Loadable from 'react-loadable'
-
 import PageLoading from '@components/PageLoading'
 
 const loadComponent = (loader: () => Promise<any>) => Loadable({ loader, loading: PageLoading })
@@ -20,7 +19,8 @@ export const asynchronousComponents = {
     Rtmp: loadComponent(() => import(/* webpackChunkName: "rtmp" */ '@views/LiveVideo/Rtmp')),
     Broadway: loadComponent(() => import(/* webpackChunkName: "broadway" */ '@views/LiveVideo/Broadway')),
     Yuv: loadComponent(() => import(/* webpackChunkName: "broadway" */ '@views/LiveVideo/Yuv')),
-    Users: loadComponent(() => import(/* webpackChunkName: "users" */ '@views/Users'))
+    Users: loadComponent(() => import(/* webpackChunkName: "users" */ '@views/Users')),
+    Upload: loadComponent(() => import(/* webpackChunkName: "Upload" */ '@views/Upload'))
 }
 
 // all routers key
@@ -41,14 +41,6 @@ export interface IMenuInTree extends IMenu {
 }
 
 export const menu: IMenu[] = [
-    // {
-    //     id: 1,
-    //     path: '/',
-    //     title: '控制面板',
-    //     icon: 'dashboard',
-    //     component: 'Dashboard',
-    //     exact: true
-    // },
     {
         id: 1,
         path: '/article',
@@ -146,6 +138,14 @@ export const menu: IMenu[] = [
     },
     {
         id: 5,
+        path: '/upload',
+        title: '上传',
+        icon: 'upload',
+        component: 'Upload',
+        exact: true
+    },
+    {
+        id: 6,
         path: '/users',
         title: '用户管理',
         icon: 'user',

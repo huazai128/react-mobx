@@ -27,6 +27,7 @@
     "author": "jackple",
     "license": "MIT",
     "dependencies": {
+        "@ant-design/icons": "^4.2.2",
         "antd": "^3.23.4",
         "autobind-decorator": "^2.4.0",
         "axios": "^0.19.0",
@@ -53,7 +54,8 @@
         "react-virtualized": "^9.21.1",
         "rxjs": "^6.5.3",
         "socket.io-client": "2.3.0",
-        "socketio-wildcard": "^2.0.0"
+        "socketio-wildcard": "^2.0.0",
+        "spark-md5": "^3.0.1"
     },
     "devDependencies": {
         "@babel/core": "7.6.2",

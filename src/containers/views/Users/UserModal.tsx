@@ -63,13 +63,7 @@ function UserModal({ visible, onCancel, user, form }: IProps) {
 
     const { getFieldDecorator } = form
     return (
-        <Modal
-            title={typeIsAdd ? 'Add User' : 'Modify User'}
-            visible={visible}
-            onOk={submit}
-            onCancel={onCancel}
-            okButtonProps={{ loading }}
-        >
+        <Modal title={typeIsAdd ? 'Add User' : 'Modify User'} visible={visible} onOk={submit} onCancel={onCancel} okButtonProps={{ loading }}>
             <Form onSubmit={submit}>
                 <FormItem {...formItemLayout} label="account">
                     {getFieldDecorator('account', {

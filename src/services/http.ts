@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-10-06 21:24:02
- * @LastEditTime: 2019-11-07 11:21:45
+ * @LastEditTime: 2020-09-15 14:47:14
  * @LastEditors: Please set LastEditors
  */
 import axios, { AxiosRequestConfig as _AxiosRequestConfig, Method } from 'axios'
@@ -61,8 +61,7 @@ methods.forEach(v => {
         )
         instance.interceptors.response.use(
             response => {
-                const rdata =
-                    typeof response.data === 'object' && !isNaN(response.data.length) ? response.data[0] : response.data
+                const rdata = typeof response.data === 'object' && !isNaN(response.data.length) ? response.data[0] : response.data
                 if (!isSuccess(rdata)) {
                     return Promise.reject({
                         msg: rdata.msg,
@@ -85,9 +84,7 @@ methods.forEach(v => {
                 }
                 return Promise.reject({
                     msg: error.response.data.error || error.response.statusText || error.message || 'network error',
-                    type: /^timeout of/.test(error.message)
-                        ? HTTPERROR[HTTPERROR.TIMEOUTERROR]
-                        : HTTPERROR[HTTPERROR.NETWORKERROR],
+                    type: /^timeout of/.test(error.message) ? HTTPERROR[HTTPERROR.TIMEOUTERROR] : HTTPERROR[HTTPERROR.NETWORKERROR],
                     config: error.config
                 })
             }
@@ -104,9 +101,7 @@ methods.forEach(v => {
             .catch(err => {
                 message.destroy()
                 message.error(err.response || err.msg || err.stack || 'unknown error')
-                return Promise.reject(
-                    axiosConfig.url.includes('autoScript.set') ? { err } : { err, stack: err.msg || err.stack || '' }
-                )
+                return Promise.reject(axiosConfig.url.includes('autoScript.set') ? { err } : { err, stack: err.msg || err.stack || '' })
             })
     }
 })
