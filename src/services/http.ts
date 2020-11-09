@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-10-06 21:24:02
- * @LastEditTime: 2020-09-15 14:47:14
+ * @LastEditTime: 2020-11-02 11:35:58
  * @LastEditors: Please set LastEditors
  */
 import axios, { AxiosRequestConfig as _AxiosRequestConfig, Method } from 'axios'
@@ -16,11 +16,11 @@ export interface AxiosRequestConfig extends _AxiosRequestConfig {
 }
 
 export interface HttpResquest {
-    get?(url: string, data: object, baseUrl?: string): Promise<any>
-    post?(url: string, data: object, baseUrl?: string): Promise<any>
-    delete?(url: string, data?: object, baseUrl?: string): Promise<any>
-    put?(url: string, data: object, baseUrl?: string): Promise<any>
-    patch?(url: string, data: object, baseUrl?: string): Promise<any>
+    get?(url: string, data: object, otherConfig?: AxiosRequestConfig, baseUrl?: string): Promise<any>
+    post?(url: string, data: object, otherConfig?: AxiosRequestConfig, baseUrl?: string): Promise<any>
+    delete?(url: string, data?: object, otherConfig?: AxiosRequestConfig, baseUrl?: string): Promise<any>
+    put?(url: string, data: object, otherConfig?: AxiosRequestConfig, baseUrl?: string): Promise<any>
+    patch?(url: string, data: object, otherConfig?: AxiosRequestConfig, baseUrl?: string): Promise<any>
 }
 
 enum HTTPERROR {
@@ -44,8 +44,8 @@ const isSuccess = res => res.code === 200
 const resFormat = res => res.response || res.result || res || {}
 
 methods.forEach(v => {
-    http[v] = (url: string, data: object, baseUrl?: string) => {
-        const axiosConfig: AxiosRequestConfig = {
+    http[v] = (url: string, data: object | FormData, otherConfig?: AxiosRequestConfig,baseUrl?: string) => {
+        let axiosConfig: AxiosRequestConfig = {
             method: v,
             url,
             baseURL: baseUrl || DEFAULTCONFIG.baseURL,
@@ -95,6 +95,9 @@ methods.forEach(v => {
             axiosConfig.data = data
         }
         axiosConfig.startTime = new Date()
+        if(otherConfig) {
+            axiosConfig = Object.assign(axiosConfig, otherConfig)
+        }
         return instance
             .request(axiosConfig)
             .then(res => res)

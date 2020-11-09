@@ -5,7 +5,7 @@ import { observer } from 'mobx-react'
 import './style.less'
 
 function Upload() {
-    const { uploadOpts, beforeUpload, changeFile } = useRootStore().maxUploadStore
+    const { beforeUpload, changeFile, status } = useRootStore().maxUploadStore
     return (
         <div className="upload">
             <div>
@@ -16,11 +16,10 @@ function Upload() {
                 </Row>
                 <Row style={{ marginBottom: '30px' }} gutter={24}>
                     <Col span={4} offset={4}>
-                        <UploadBtn {...uploadOpts} beforeUpload={beforeUpload} onChange={changeFile}>
-                            <Button>
-                                <Icon type="upload" /> 上传文件
-                            </Button>
-                        </UploadBtn>
+                        <input type="file" disabled={ status !== 'WAIT' } onChange={ beforeUpload }></input>
+                    </Col>
+                    <Col span={3}>
+                        <Button onClick={ changeFile }>上传</Button>
                     </Col>
                     <Col span={3}>
                         <Button>恢复</Button>
