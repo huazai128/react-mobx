@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-19 14:21:29
- * @LastEditTime: 2020-11-02 11:21:23
+ * @LastEditTime: 2021-01-07 17:16:55
  * @LastEditors: Please set LastEditors
  */
 
@@ -22,5 +22,10 @@ export default {
     // 上传文件
     uploadFileHash(data={},config = {}): Promise<any> {
         return http.post('upload/fileChunk',data, config)
+    },
+
+    // 合并上传
+    mergeUpload(data={}): Promise<any>  {
+        return http.get('upload/merge', data)
     }
 }

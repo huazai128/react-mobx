@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-10-06 21:24:02
- * @LastEditTime: 2020-11-02 11:35:58
+ * @LastEditTime: 2021-01-07 16:24:01
  * @LastEditors: Please set LastEditors
  */
 import axios, { AxiosRequestConfig as _AxiosRequestConfig, Method } from 'axios'
@@ -36,11 +36,14 @@ const DEFAULTCONFIG = {
 }
 
 const http: HttpResquest = {}
+// 支持请求方法，简单请求
 const methods: Method[] = ['get', 'post', 'put', 'delete', 'patch']
 
 let authTimer: NodeJS.Timer = null
 
-const isSuccess = res => res.code === 200
+// 判断请求是否成功
+const isSuccess = res => (res.code === 200 || res.code === 0)
+// 格式化返回结果
 const resFormat = res => res.response || res.result || res || {}
 
 methods.forEach(v => {
@@ -52,6 +55,7 @@ methods.forEach(v => {
             headers: { Authorization: `Bearer ${userInfo.token}` }
         }
         const instance = axios.create(DEFAULTCONFIG)
+        // 请求拦截
         instance.interceptors.request.use(
             cfg => {
                 cfg.params = { ...cfg.params, ts: Date.now() / 1000 }
@@ -59,6 +63,7 @@ methods.forEach(v => {
             },
             error => Promise.reject(error)
         )
+        // 响应拦截
         instance.interceptors.response.use(
             response => {
                 const rdata = typeof response.data === 'object' && !isNaN(response.data.length) ? response.data[0] : response.data

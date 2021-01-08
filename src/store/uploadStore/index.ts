@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-16 17:53:18
- * @LastEditTime: 2020-10-14 15:59:16
+ * @LastEditTime: 2021-01-07 11:59:37
  * @LastEditors: Please set LastEditors
  */
 import { observable, action, runInAction } from 'mobx'
@@ -18,6 +18,10 @@ export class UploadStore extends StoreExt {
     @observable data: IData = null
     @observable thumb: string = ''
 
+    /**
+     * 上传前资源验证
+     * @memberof UploadStore
+     */
     @action
     beforeUpload = (file: File) => {
         const isPNG = file.type === 'image/png'

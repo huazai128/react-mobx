@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-16 17:53:18
- * @LastEditTime: 2020-11-03 15:53:14
+ * @LastEditTime: 2021-01-07 19:25:03
  * @LastEditors: Please set LastEditors
  */
 import { observable, action, runInAction } from 'mobx'
@@ -26,9 +26,21 @@ export interface FileModel {
     percentage: number;
 }
 
+/**
+ * 用于大文件上传
+ * @export
+ * @class MaxUploadStore
+ * @extends {StoreExt}
+ */
 @autobind
 export class MaxUploadStore extends StoreExt {
-    private size: number = 10 * 1024 * 1024 // 切片大小
+    private zipReg: RegExp = new RegExp(/^.*(?<=(zip|rar|tar))$/);
+    private imageReg: RegExp = new RegExp(/^.*(?<=(jpg|jpeg|png))$/);
+    private videoReg: RegExp = new RegExp(/^.*(?<=(mp4|avi|rmvb|flv))$/);
+    private KB:number = 1024;
+    private MB:number = 1024 * this.KB;
+    private GB:number = 1024 * this.MB;
+    private size: number = 1024 // 切片大小
     // 上传文件信息
     private file: File;
     // 文件hash
@@ -53,8 +65,20 @@ export class MaxUploadStore extends StoreExt {
         }
         // 重置数据
         this.resetData();
-        this.file = file
+        this.file = file;
+        this.calFileInfo();
     }
+
+    /**
+     * 验证文件
+     * @private
+     * @memberof MaxUploadStore
+     */
+    private calFileInfo() {
+        const { name, size } = this.file
+
+    }
+    
 
     /**
      * 点击开始上传
@@ -66,8 +90,6 @@ export class MaxUploadStore extends StoreExt {
         const fileChunkList = this.createFileChunk(this.file)
         // 生成文件hash
         this.hash = await this.calculateHash(fileChunkList)
-
-        console.log(this.hash)
         // 验证文件是否有上次过
         const { shouldUpload, uploadedList } = await this.verifyUpload(this.file.name, this.hash)
         if (!shouldUpload) {
@@ -164,7 +186,7 @@ export class MaxUploadStore extends StoreExt {
     private async uploadChunks (uploadedList: Array<any> = []) {
         const requestList = []
         this.fileData
-            .filter(({ hash }) => !uploadedList.includes(hash))
+            .filter(({ hash }) => !uploadedList.includes(hash)) // 过滤已上传的文件
             .map(({ chunk, hash, index }) => {
                 const formData = new FormData()
                 formData.append('chunk', chunk)
@@ -176,8 +198,9 @@ export class MaxUploadStore extends StoreExt {
                 }
             }).forEach(({ formData, index }) => {
                 const chunkReqItem = this.api.upload.uploadFileHash(formData, {
+                    // 上传进度
                     onUploadProgress: (e) => {
-                        // console.log('=====')
+                        console.log(e)
                     }
                 })
                 requestList.push(chunkReqItem)
@@ -186,11 +209,22 @@ export class MaxUploadStore extends StoreExt {
         await Promise.all(requestList);
         // 之前上传的切片数量 + 本次上传的切片数量 = 所有切片数量时 发起合并请求
         if((uploadedList.length + requestList.length) === this.fileData.length) {
-            console.log(21212)
+            this.mergeUpload();
         }
     }
 
-
+    /**
+     * 发起文件合并请求
+     * @private
+     * @memberof MaxUploadStore
+     */
+    private async mergeUpload() {
+        await this.api.upload.mergeUpload({
+            fileHash: this.hash,
+            filename: this.file.name,
+            size: this.size
+        })
+    }
 }
 
 export default new MaxUploadStore()

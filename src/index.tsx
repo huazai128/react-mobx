@@ -11,5 +11,4 @@ configure({ enforceActions: 'observed' })
 const render = (Component: React.ComponentType) => {
     ReactDOM.render(<Component />, document.getElementById('app'))
 }
-
 render(App)
