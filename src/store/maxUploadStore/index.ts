@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-16 17:53:18
- * @LastEditTime: 2021-01-07 19:25:03
+ * @LastEditTime: 2021-01-13 14:35:05
  * @LastEditors: Please set LastEditors
  */
 import { observable, action, runInAction } from 'mobx'
@@ -61,6 +61,7 @@ export class MaxUploadStore extends StoreExt {
     beforeUpload = async (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files[0]
         if(!file) {
+            message('请上传文件')
             return
         }
         // 重置数据
@@ -70,15 +71,21 @@ export class MaxUploadStore extends StoreExt {
     }
 
     /**
-     * 验证文件
+     * 验证文件以及获取文件格式
      * @private
      * @memberof MaxUploadStore
      */
     private calFileInfo() {
         const { name, size } = this.file
-
+        // 针对不同文件上传到不同桶，方便管理
+        if(this.zipReg.test(name)) {
+            console.log('压缩文件')
+        } else if(this.imageReg.test(name)) {
+            console.log('图片资源')
+        } else if(this.videoReg.test(name)) {
+            console.log('视频资源')
+        } 
     }
-    
 
     /**
      * 点击开始上传
