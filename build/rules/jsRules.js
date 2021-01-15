@@ -26,7 +26,8 @@ module.exports = [
                         ['import', { libraryName: 'antd', libraryDirectory: 'lib', style: true }],
                         ['@babel/plugin-proposal-decorators', { legacy: true }],
                         ['@babel/plugin-proposal-class-properties', { loose: true }],
-                        '@babel/plugin-syntax-dynamic-import'
+                        ["@babel/plugin-proposal-optional-chaining", { "loose": false }], // 支持？语法
+                        '@babel/plugin-syntax-dynamic-import', // 支持import动态导入
                     ]
                 }
             }

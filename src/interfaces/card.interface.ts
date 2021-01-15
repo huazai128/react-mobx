@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-05-21 17:26:52
- * @LastEditTime: 2020-05-26 22:32:13
+ * @LastEditTime: 2021-01-14 18:13:50
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /react-mobx1/src/containers/views/Canvas/Card/interfase.ts
@@ -17,86 +17,107 @@ export interface CanvasParams {
     canvasWidth: number
     // 画卡高度
     canvasHeight: number
-    // 设置其他参数
-    [key: string]: any
+    // 画卡缩放比例
+    sacal?: number 
+    // 画卡背景色
+    backgroundColor?: string;
+    // 前端请求传递这个参数，当前的视图宽/750
+    factor?: number;
+    // 图片存储参数
+    images?: Array<IImage>
 }
 
 /**
- * 绘制通用参数
+ * 圆角
  * @export
- * @interface DrawModule
+ * @interface IDrawRadiusRectData
  */
-export interface DrawModule {
-    // 图片宽度
-    width: number
-    // 图片高度
-    height: number
-    // 距离X轴
-    x: number
-    // 距离Y轴
-    y: number
-    // 半径
-    r?: number
+export interface IDrawRadiusRectData {
+    // X轴
+    x: number;
+    // Y轴
+    y: number;
+    // 宽
+    w: number;
+    // 高
+    h: number;
+    // 圆角大小
+    r: number;
 }
 
 /**
- * 绘制图片参数
+ * 绘制图片
  * @export
- * @interface ImgParams
+ * @interface IImage
  */
-export interface ImgParams extends DrawModule {
+export interface IImage {
+    // X轴
+    x: number;
+    // Y轴
+    y: number;
     // 图片链接
-    imgUrl: string
-}
-
-/**
- * 绘制文字
- * @export
- * @interface DrewText
- */
-export interface DrewText extends DrawModule {
-    // 绘制文字
-    txt: string
-    // 文字大小
-    size: string
-    // 文字粗细
-    bold: string
-    // 文字颜色
-    color: string
-}
-
-/**
- * 绘制颜色背景
- * @export
- * @interface DrawBg
- */
-export interface DrawBg extends DrawModule {
-    // 背景颜色
-    bgColor: string
-}
-
-/**
- * 绘制直线
- * @export
- * @interface DrawLine
- */
-export interface DrawLine {
+    imgUrl: string;
+    // 宽
+    width: number;
+    // 高
+    height: number;
+    // 圆角大小
+    borderRadius?: number;
     // 线宽
-    lineWidth: number
-    // 起始坐标X
-    startX: number
-    // 起始坐标Y
-    startY: number
-    // 终点坐标X
-    endX: number
-    // 终点坐标Y
-    endY: number
+    borderWidth?: number;
+    // 边框线颜色
+    borderColor?: string;
     // 绘制颜色
-    strokeStyle?: string
-    // 填充颜色
-    fillColor?: string
-    // 更多坐标
-    [key: string]: any
+    strokeStyle?: string;
+    // 层级
+    zIndex?: number;
 }
 
-export type AllParams = Partial<ImgParams> | DrewText | DrawBg | DrawLine
+/**
+ * 绘制文本
+ * @export
+ * @interface IText
+ */
+export interface IText {
+    // X轴
+    x: number;
+    // Y轴
+    y: number;
+    // 文案
+    text: string | Array<string>;
+    // 表示当前文案于之前的文案联动(当期文案的所在的位置和上一个文案有关联)
+    status?: 'X' | 'Y' | ['X' , 'Y']
+    // 表示清除联动
+    closeStatue?: 'Y' | 'X' | ['X' , 'Y']
+    // 字体大小
+    fontSize: number;
+    // 字体颜色
+    color?: string;
+    // 字体透明度
+    opacity?: 1 | 0;
+    // 字体行高
+    lineHeight?: number;
+    // 字体限制行数
+    lineNum?: number;
+    // 字体宽度
+    width?: number;
+    // 左右字体的间距
+    marginLeft?: number;
+    // 上下字体间距
+    marginTop?: number;
+    // 文字是否绘制线
+    textDecoration?: 'line-through' | 'none';
+    // 文字的竖直对齐方式
+    baseLine?: 'top' | 'middle' | 'bottom';
+    // 文字样式位置
+    textAlign?: 'left' | 'center' | 'right';
+    // 字体
+    fontFamily?: string;
+    // 文字粗细
+    fontWeight?: string;
+    // 文字样式
+    fontStyle?: string;
+    // 层级
+    zIndex?: number;
+}
+
