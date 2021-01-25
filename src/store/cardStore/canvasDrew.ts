@@ -1,12 +1,12 @@
 /*
  * @Author: your name
  * @Date: 2020-05-28 14:26:23
- * @LastEditTime: 2021-01-14 19:38:21
+ * @LastEditTime: 2021-01-22 18:11:17
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /react-mobx1/src/store/cardStore/canvasDrew.ts
  */
-import { CanvasParams, IImage, IDrawRadiusRectData, IText } from '@interfaces/card.interface'
+import { CanvasParams, IImage, IDrawRadiusRectData, IText, IBlock } from '@interfaces/card.interface'
 
 /**
  * 画卡实例
@@ -136,7 +136,7 @@ class CanvasDrew {
      */
     private _drawSingleText(drawData: IText) {
         let { x = 0, y = 0, fontSize = 12, color, baseLine, textAlign = 'left', text, opacity = 1, textDecoration = 'none', status = '', closeStatue= 'N',
-        width = 0, lineNum = 1, lineHeight = 0, fontWeight = 'normal', fontStyle = 'normal', fontFamily = '"苹方 常规","微软雅黑"', marginLeft = 0, marginTop = 0  } = drawData;
+        width, lineNum = 1, lineHeight = 0, fontWeight = 'normal', fontStyle = 'normal', fontFamily = '"苹方 常规","微软雅黑"', marginLeft = 0, marginTop = 0  } = drawData;
         this.ctx.save();
         this.ctx.beginPath();
         this.ctx.font = fontStyle + " " + fontWeight + " " + this.toScale(fontSize) + "px " + fontFamily
@@ -234,12 +234,119 @@ class CanvasDrew {
             if(Object.is(status, 'X') || (Array.isArray(status) && status.includes('X'))) {
                 this.upX += textWidth + marginLeft
             }
-            if(Object.is(status, 'Y')) {
+            if(Object.is(status, 'Y') || (Array.isArray(status) && status.includes('Y') && !status.includes('X'))) {
                 textH = (lineHeight || fontSize) * textArr.length
                 this.upY += textH + marginTop
+                console.log(this.upY)
             }
         }
         this.clear(closeStatue)
+    }
+
+    /**
+     * 绘制文本框、 边框、背景、文本对齐等效果
+     * @public
+     * @param {IBlock} drawData
+     * @memberof DrawComponent
+     */
+    public drawBlock(drawData: IBlock) {
+        const { text, typeBorder = 'once', y, x, status, marginRight = 0} = drawData;
+        let txt = (text && text.text) || ''
+        const newY = Object.is(status, 'Y') ? (this.upY + y) : y
+        let newX = x;
+        if(Object.is(typeBorder, 'multiple') && Array.isArray(txt)) {
+            txt.forEach((item) => {
+                newX += this._drawBlock(Object.assign(drawData, { y: newY, x: newX }), item)
+                newX += marginRight
+            })
+        } else {
+            this._drawBlock(Object.assign(drawData, { y: newY, }), (txt as string))
+        }
+    }
+
+    /**
+     * 绘制块
+     * @private
+     * @param {string} text
+     * @param {IBlock} drawData
+     * @memberof DrawComponent
+     */
+    private _drawBlock(drawData: IBlock, txt?: string ){
+        const { text, width = 0, height, x, y, borderWidth, backgroundColor, borderColor, borderRadius = 0, opacity = 1, padding = 0 } = drawData;
+        let blockWidth, textY, textX = 0
+        if (typeof txt !== 'undefined' && text) {
+            // 如果有文字并且块的宽度小于文字宽度，块的宽度为 文字的宽度 + 内边距
+            this.ctx.font = text.fontStyle + " " + text.fontWeight + " " + this.toScale(text.fontSize) + "px " + text.fontFamily
+            const textWidth: number = this._getTextWidth(txt, text.fontSize);
+            blockWidth = textWidth > width ? textWidth : width;
+            blockWidth += 2 * padding;
+            const { textAlign = 'left', } = text;
+            textY = height / 2 + y; // 文字的y轴坐标在块中线
+            if (textAlign === 'left') {
+                // 如果是右对齐，那x轴在块的最左边
+                textX = x + padding;
+            } else if (textAlign === 'center') {
+                textX = blockWidth / 2 + x;
+            } else {
+                textX = x + blockWidth - padding;
+            }
+        }   else {
+            blockWidth = width;
+        }
+        // 绘制背景色
+        if(backgroundColor) {
+            // 画面
+            this.ctx.save();
+            this.ctx.globalAlpha = opacity;
+            this.ctx.fillStyle = backgroundColor;
+            if (borderRadius > 0) {
+                // 画圆角矩形
+                let drawData = {
+                    x, y, w: blockWidth, h: height, r: borderRadius
+                };
+                this.drawRadiusRect(drawData);
+                this.ctx.fill();
+            } else {
+                this.ctx.fillRect(this.toScale(x), this.toScale(y), this.toScale(blockWidth), this.toScale(height));
+            }
+            this.ctx.restore();
+        }
+        // 绘制边框
+        if (borderWidth) {
+            // 画线
+            this.ctx.save();
+            this.ctx.globalAlpha = opacity;
+            borderColor && (this.ctx.strokeStyle = borderColor);
+            this.ctx.lineWidth = borderWidth
+            // 如果存在圆角,画圆角矩形边框
+            if (borderRadius > 0) {
+                let drawData = {
+                    x, y, w: blockWidth, h: height, r: borderRadius,
+                }
+                this.drawRadiusRect(drawData);
+                this.ctx.stroke();
+            } else {
+                this.ctx.strokeRect(this.toScale(x), this.toScale(y), this.toScale(blockWidth), this.toScale(height));
+            }
+            this.ctx.restore();
+        }
+        // 绘制文本
+        if (text) {
+            this.drawText(Object.assign(text, { x: textX, y: textY, text: txt }))
+        }
+        return blockWidth
+    }
+
+     /**
+     * 计算文本宽度
+     * @private
+     * @param {string} _text
+     * @param {number} fontSize
+     * @returns
+     * @memberof DrawComponent
+     */
+    private _getTextWidth(_text: string, fontSize: number) {
+        return this.ctx.measureText(_text).width;
     }
 
     /**

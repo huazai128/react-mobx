@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-05-21 17:26:52
- * @LastEditTime: 2021-01-14 18:13:50
+ * @LastEditTime: 2021-01-22 17:21:33
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /react-mobx1/src/containers/views/Canvas/Card/interfase.ts
@@ -25,6 +25,50 @@ export interface CanvasParams {
     factor?: number;
     // 图片存储参数
     images?: Array<IImage>
+    // 绘制文本框（包含背景、边框效果）、文本对齐(如左对齐、右对齐居中等效果)、
+    blocks?: IBlock[]
+}
+
+/**
+ * 绘制文本框、 边框、背景、文本对齐等效果
+ * @export
+ * @interface IBlock
+ */
+export interface IBlock {
+    // X轴
+    x: number;
+    // Y 轴
+    y: number;
+    // 宽
+    width?: number;
+    //高
+    height: number;
+    // 边线宽
+    borderWidth?: number;
+    // 边线颜色
+    borderColor?: string;
+    // 背景颜色
+    backgroundColor?: string;
+    // 圆角
+    borderRadius?: number;
+    // 指文案距离左右边框的距离
+    padding?: number; 
+    // 边框类型  once： 只有一个边框 ，  multiple：多个本文多个边框
+    typeBorder?: 'once' | 'multiple';
+    // 两个文本之间的距离
+    marginRight?: number
+    // 文本
+    text?: IText;
+    // 透明度
+    opacity?: number;
+    // 层级
+    zIndex?: number;
+    // 表示当前文案于之前的文案联动(当期文案的所在的位置和上一个文案有关联)
+    status?: 'X' | 'Y' | ['X' , 'Y']
+    // 表示清除联动
+    closeStatue?: 'Y' | 'X' | ['X' , 'Y']
+    // 
+    type?: string;
 }
 
 /**

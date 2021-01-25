@@ -1,6 +1,6 @@
 import * as React from 'react'
 import PhonePage from '@components/PhonePage'
-import { Row, Col, Input, Select, Button, message } from 'antd'
+import { Row, Col, Input, Select, Button, message, Radio } from 'antd'
 import { CanvasParams, IImage } from '@interfaces/card.interface'
 import { observer, useObserver } from 'mobx-react'
 import useRootStore from '@store/useRootStore'
@@ -15,7 +15,7 @@ const { Option } = Select
  */
 function Card() {
     const canvasRef = React.useRef<HTMLCanvasElement>(null)
-    const { changeCanvas, saveCanvasParams, canvasParams, imgParams, changeImgParams, saveDrewImg, basieList, imgsList, textList, textParams, changeTextarams, saveDrewText } = useRootStore().cardStore
+    const { changeCanvas, saveCanvasParams, canvasParams, imgParams, changeImgParams, saveDrewImg, basieList, imgsList, textList, textParams, changeText, saveDrewText, handleSizeChange, drawType } = useRootStore().cardStore
     return (
         <div className="card-box">
             <PhonePage className="flex-1">
@@ -30,7 +30,6 @@ function Card() {
                                 <Input
                                     key={ index } 
                                     style={{ width:item.width || 100 }}
-                                    defaultValue={String(canvasParams[item.type] || '')}
                                     value={String(canvasParams[item.type] || '')}
                                     placeholder={item.placeholder}
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => changeCanvas(e, item.type)}
@@ -46,7 +45,6 @@ function Card() {
                             <Input
                                 key={ index } 
                                 style={{ width:item.width || 100 }}
-                                defaultValue={String(imgParams[item.type] || '')}
                                 value={String(imgParams[item.type] || '')}
                                 placeholder={item.placeholder}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => changeImgParams(e, item.type)}
@@ -57,28 +55,32 @@ function Card() {
                     </Col>
                     <Col className="gutter-row" span={24}>
                         <br />
-                        <p>绘制文字</p>
+                        <p>绘制文本或者文本框</p>
+                        <Radio.Group value={drawType} onChange={handleSizeChange}>
+                            <Radio.Button value="text">绘制文字(单行或者多行文本包含中划线)</Radio.Button>
+                            <Radio.Button value="block">绘制文本框（包含背景、边框效果）、文本对齐(如左对齐、右对齐居中等效果)</Radio.Button>
+                        </Radio.Group>
+                        <p></p>
                         { textList.map((item,index) => {
                             if(!item.status){
                                 return (
                                     <Input
                                         key={ index } 
                                         style={{ width:item.width || 100 }}
-                                        defaultValue={String(textParams[item.type] || '')}
-                                        value={String(textParams[item.type] || '')}
+                   
+                                        value={textParams[item.type] || ''}
                                         placeholder={item.placeholder}
-                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => changeTextarams(e, item.type)}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => changeText(e, item.type)}
                                     />
                                 )
                             } else {
                                 return (
                                     <Select 
-                                        defaultValue={ textParams[item.type] }
                                         placeholder={ item.placeholder } 
                                         mode={ item.status }
                                         value={ textParams[item.type] }
                                         key={ index } style={{ width: 200 }} 
-                                        onChange={(e) => changeTextarams(e, item.type)}>
+                                        onChange={(e) => changeText(e, item.type)}>
                                             { item.data.map((t,idx) => (
                                                 <Option key={ idx } value={ t.type }>{ t.name }</Option>
                                             )) }
