@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-05-26 22:26:35
- * @LastEditTime: 2021-01-24 12:00:28
+ * @LastEditTime: 2021-02-07 18:56:30
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /react-mobx1/src/store/cardStore/index.ts
@@ -105,6 +105,7 @@ export class CardStore extends StoreExt {
             placeholder: '绘制层级' // 层级越高越后绘制
         },
     ]
+    // 绘制块
     @observable blockList: Array<ConfigParams> = [
         {
             type: 'width',
@@ -137,6 +138,63 @@ export class CardStore extends StoreExt {
         {
             type: 'backgroundColor',
             placeholder: '背景颜色'
+        },
+        {
+            type: 'padding',
+            placeholder: '指文案距离左右边框的距离'
+        },
+        {
+            type: 'typeBorder',
+            placeholder: '边框类型',
+            status: 'single',
+            data: [
+                {
+                    type: 'once',
+                    name: '一个边框'
+                },
+                {
+                    type: 'multiple',
+                    name: '多个边框'
+                },
+            ]
+        },
+        {
+            type: 'marginRight',
+            placeholder: '两个边框的会距离'
+        },
+        {
+            type: 'status',
+            placeholder: '是否与上下文本之间的宽高关联',
+            status: 'multiple',
+            data: [
+                {
+                    type: 'X',
+                    name: '关联X轴'
+                },
+                {
+                    type: 'Y',
+                    name: '关联Y轴'
+                }
+            ]
+        },
+        {
+            type: 'closeStatue',
+            placeholder: '是否清除与上下文本之间关联的宽高',
+            status: 'multiple',
+            data: [
+                {
+                    type: 'X',
+                    name: '关联X轴'
+                },
+                {
+                    type: 'Y',
+                    name: '关联Y轴'
+                }
+            ]
+        },
+        {
+            type: 'opacity',
+            placeholder: '透明度' 
         },
         {
             type: 'zIndex',
@@ -296,8 +354,8 @@ export class CardStore extends StoreExt {
     private imgList: Array<IImage> = []
     // 所有绘制文本
     private txtList: Array<IText> = []
-     // 所有绘制文本
-     private blocks: Array<IBlock> = []
+    // 所有绘制文本
+    private blocks: Array<IBlock> = []
 
     /**
      * 获取画卡实例对象
@@ -362,7 +420,7 @@ export class CardStore extends StoreExt {
      * @memberof CardStore
      */
     @action 
-    public changeText(e, type: string) {
+    public changeText(e, type: string, status?: string) {
         let value
         if(e.target) {
             value = e.target.value
@@ -372,7 +430,7 @@ export class CardStore extends StoreExt {
         if(this.numberList.includes(type)) {
             value = Number(value)
         }
-        if(Object.is(this.drawType, 'text')) {
+        if(Object.is(this.drawType, 'text') && Object.is(status, 'textParams')) {
             this.textParams[type] = value
         } else {
             this.blockParams[type] = value
@@ -390,16 +448,29 @@ export class CardStore extends StoreExt {
             this.txtList.push((toJS(this.textParams) as IText))
             this.textParams = {}
         } else {
-            this.canvasDrew.drawBlock((toJS(this.blockParams) as IBlock))
-            this.blocks.push((toJS(this.blockParams) as IBlock))
+            const params = (toJS(this.blockParams) as IBlock)
+            params.text = (toJS(this.textParams) as IText)
+            if (Object.is(params.typeBorder, 'multiple') && typeof(params.text.text) == 'string'){
+                params.text.text = params.text.text.split('&')
+            }
+            this.canvasDrew.drawBlock(params)
+            this.blocks.push(params)
             this.blockParams = {}
+            this.textParams = {}
+
         }
     }
 
+    /**
+     * 选择绘制类型
+     * @param {*} e
+     * @memberof CardStore
+     */
     @action
     public handleSizeChange(e) {
         const list = [...new Set([...Object.values(this.textParams), ...Object.values(this.blockParams)])]
         if(!list.length) {
+            console.log('e.target.value', e.target.value)
             this.drawType = e.target.value
         } else {
             message.info('已经在编辑中，不能更改')

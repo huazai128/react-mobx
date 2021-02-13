@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-16 17:53:18
- * @LastEditTime: 2021-01-13 14:35:05
+ * @LastEditTime: 2021-02-07 15:21:41
  * @LastEditors: Please set LastEditors
  */
 import { observable, action, runInAction } from 'mobx'
@@ -61,7 +61,7 @@ export class MaxUploadStore extends StoreExt {
     beforeUpload = async (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files[0]
         if(!file) {
-            message('请上传文件')
+            message.info('请上传文件')
             return
         }
         // 重置数据

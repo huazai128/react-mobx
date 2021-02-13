@@ -4,9 +4,11 @@ import { Row, Col, Input, Select, Button, message, Radio } from 'antd'
 import { CanvasParams, IImage } from '@interfaces/card.interface'
 import { observer, useObserver } from 'mobx-react'
 import useRootStore from '@store/useRootStore'
+import CanvasBox from './components/CardBox'
 import './style.less'
 
 const { Option } = Select
+const hideType = ['status', 'closeStatue', 'zIndex']
 
 /**
  * 通用画卡功能
@@ -15,7 +17,8 @@ const { Option } = Select
  */
 function Card() {
     const canvasRef = React.useRef<HTMLCanvasElement>(null)
-    const { changeCanvas, saveCanvasParams, canvasParams, imgParams, changeImgParams, saveDrewImg, basieList, imgsList, textList, textParams, changeText, saveDrewText, handleSizeChange, drawType } = useRootStore().cardStore
+    const { changeCanvas, saveCanvasParams, canvasParams, imgParams, changeImgParams, saveDrewImg, blockList, blockParams,
+        basieList, imgsList, textList, textParams, changeText, saveDrewText, handleSizeChange, drawType } = useRootStore().cardStore
     return (
         <div className="card-box">
             <PhonePage className="flex-1">
@@ -61,14 +64,13 @@ function Card() {
                             <Radio.Button value="block">绘制文本框（包含背景、边框效果）、文本对齐(如左对齐、右对齐居中等效果)</Radio.Button>
                         </Radio.Group>
                         <p></p>
-                        { textList.map((item,index) => {
+                        { Object.is(drawType, 'block') && blockList.map((item, index) => {
                             if(!item.status){
                                 return (
                                     <Input
                                         key={ index } 
                                         style={{ width:item.width || 100 }}
-                   
-                                        value={textParams[item.type] || ''}
+                                        value={blockParams[item.type] || ''}
                                         placeholder={item.placeholder}
                                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => changeText(e, item.type)}
                                     />
@@ -78,9 +80,37 @@ function Card() {
                                     <Select 
                                         placeholder={ item.placeholder } 
                                         mode={ item.status }
-                                        value={ textParams[item.type] }
+                                        value={ blockParams[item.type] }
                                         key={ index } style={{ width: 200 }} 
                                         onChange={(e) => changeText(e, item.type)}>
+                                            { item.data.map((t,idx) => (
+                                                <Option key={ idx } value={ t.type }>{ t.name }</Option>
+                                            )) }
+                                    </Select>
+                                )
+                            }
+                        }) }
+                        <p></p>
+                        { textList.map((item,index) => {
+                            if(Object.is(drawType, 'block') && hideType.includes(item.type)) return null
+                            if(!item.status){
+                                return (
+                                    <Input
+                                        key={ index } 
+                                        style={{ width:item.width || 100 }}
+                                        value={textParams[item.type] || ''}
+                                        placeholder={item.placeholder}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => changeText(e, item.type, 'textParams')}
+                                    />
+                                )
+                            } else {
+                                return (
+                                    <Select 
+                                        placeholder={ item.placeholder } 
+                                        mode={ item.status }
+                                        value={ textParams[item.type] }
+                                        key={ index } style={{ width: 200 }} 
+                                        onChange={(e) => changeText(e, item.type, 'textParams')}>
                                             { item.data.map((t,idx) => (
                                                 <Option key={ idx } value={ t.type }>{ t.name }</Option>
                                             )) }
