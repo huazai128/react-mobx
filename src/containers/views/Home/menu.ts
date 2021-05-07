@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-08-30 13:58:35
- * @LastEditTime: 2020-10-13 18:23:19
+ * @LastEditTime: 2021-05-06 11:39:52
  * @LastEditors: Please set LastEditors
  */
 import Loadable from 'react-loadable'
@@ -16,6 +16,7 @@ export const asynchronousComponents = {
     EditArticle: loadComponent(() => import(/* webpackChunkName: "addArticle" */ '@views/EditArticle')),
     Like: loadComponent(() => import(/* webpackChunkName: "like" */ '@views/Canvas/Like')),
     Card: loadComponent(() => import(/* webpackChunkName: "card" */ '@views/Canvas/Card')),
+    Map: loadComponent(() => import(/* webpackChunkName: "card" */ '@views/Canvas/Map')),
     Rtmp: loadComponent(() => import(/* webpackChunkName: "rtmp" */ '@views/LiveVideo/Rtmp')),
     Broadway: loadComponent(() => import(/* webpackChunkName: "broadway" */ '@views/LiveVideo/Broadway')),
     Yuv: loadComponent(() => import(/* webpackChunkName: "broadway" */ '@views/LiveVideo/Yuv')),
@@ -99,6 +100,15 @@ export const menu: IMenu[] = [
         title: '通用画卡',
         icon: 'book',
         component: 'Card',
+        exact: true
+    },
+    {
+        pid: 3,
+        id: 32,
+        path: '/map',
+        title: 'Canvas缩放放大',
+        icon: 'book',
+        component: 'Map',
         exact: true
     },
     {
