@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-04-30 10:54:41
- * @LastEditTime: 2021-05-07 15:00:23
+ * @LastEditTime: 2021-05-11 19:28:18
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /react-mobx/src/containers/views/Canvas/Map/index.tsx
@@ -40,14 +40,21 @@ class MapCanvas {
         this.ctx = canvas.getContext('2d')
         this.initCavas();
     }
+
+    /**
+     * 初始化
+     * @memberof MapCanvas
+     */
     async initCavas() {
         await this.loadImage('https://img.qlchat.com/qlLive/activity/image/ICLAJAYZ-PZ19-M9WM-1620287616694-OQR1MJFKO67O.jpg')
         this.drawImage();
+        // PC端事件监听
         this.canvasRef.addEventListener('mousedown', this.startMouse.bind(this))
         this.canvasRef.addEventListener('mousemove', this.moveMouse.bind(this))
         this.canvasRef.addEventListener('mouseup', this.endMouse.bind(this))
         this.canvasRef.addEventListener('mousewheel', this.mouseWheel.bind(this)) // 监听滚轮
         this.canvasRef.addEventListener('wheel', this.mouseWheel.bind(this)) // 监听滚轮
+        // 移动端事件监听
         this.canvasRef.addEventListener('touchstart', this.startTouch.bind(this))
         this.canvasRef.addEventListener('touchmove', this.moveTouch.bind(this))
         this.canvasRef.addEventListener('touchend', this.endMouse.bind(this))
@@ -68,7 +75,7 @@ class MapCanvas {
                 reject('');
             }
             this.img.onerror = function(error) {
-                console.log(error, 'error=====')
+                console.error(error, 'error=====')
                 resolve(error)
             }
             this.img.src = url
@@ -83,6 +90,7 @@ class MapCanvas {
     private drawImage() {
         // 清除上一帧绘制
         this.ctx.clearRect(0, 0, this.canvasRef.width, this.canvasRef.height)
+        // 绘制图片
         this.ctx.drawImage(
             this.img,
             0,0,
@@ -143,7 +151,7 @@ class MapCanvas {
     }
 
     /**
-     * 移动端拖动
+     * 移动端拖动缩放
      * @private
      * @param {React.TouchEvent<HTMLElement>} e
      * @memberof MapCanvas
@@ -158,7 +166,6 @@ class MapCanvas {
             this.imgX += x;
             this.imgY += y;
             this.startPos = {...this.movePos} // 更新最新位置
-            
         } else {
             const now = e.touches
             // 处理位置
@@ -205,6 +212,7 @@ class MapCanvas {
     private mouseWheel(e: React.WheelEvent<HTMLElement> & { wheelDelta: number } ) {
         const { clientX, clientY, wheelDelta } = e
         const pos = this.windowToCanvas(clientX, clientY)
+        // 计算图片的位置
         const newPos = { x: Number(((pos.x - this.imgX)/this.imgScale).toFixed(2)), y: Number(((pos.y - this.imgY)/this.imgScale).toFixed(2)) }
         // 判断是放大还是缩小
         if(wheelDelta > 0) { // 放大
@@ -218,7 +226,7 @@ class MapCanvas {
                 this.imgScale = this.MINIMUM_SCALE
             }
         }
-        // 计算图片的位置， 更具当前缩放比例，计算新的位置
+        // 计算图片的位置， 根据当前缩放比例，计算新的位置
         this.imgX = (1-this.imgScale)*newPos.x+(pos.x-newPos.x);
         this.imgY = (1-this.imgScale)*newPos.y+(pos.y-newPos.y);
         this.drawImage(); // 开始绘制图片
@@ -257,10 +265,9 @@ class MapCanvas {
 }
 
 const CanvasMap:React.FC<IP> = ({}: IP) => {
-    const [state, setstate] = React.useState()
     const canvasRef = React.useRef<HTMLCanvasElement>()
     React.useEffect(() => {
-        const canvasMap = new MapCanvas(canvasRef.current);
+        new MapCanvas(canvasRef.current);
     }, [])
     return (
         <div className={ styles['map-box'] }>
