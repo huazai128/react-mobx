@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-04-14 18:21:12
- * @LastEditTime: 2020-04-30 11:20:19
+ * @LastEditTime: 2021-05-12 17:00:06
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /react-mobx1/src/containers/views/Canvas/Like/like.worker.ts
@@ -9,14 +9,19 @@
 import { requestFrame } from '@utils/util'
 
 type Loop<R> = (diffTime: number) => R
+
 interface RenderModel {
     render: (time: number) => boolean | void
     duration: number
     timestamp: number
 }
 
-class ThumbsUpAni {
-    private ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
+/**
+ * 离屏Canvas实现
+ * @class SendLove
+ */
+class SendLove {
+    private ctx: OffscreenCanvasRenderingContext2D
     private width: number
     private height: number
     private listImage: Array<CanvasImageSource>
@@ -24,7 +29,7 @@ class ThumbsUpAni {
     private scanning: boolean = false
     // 放大时间
     private scaleTime: number = 0.1
-    constructor(canvas: HTMLCanvasElement | OffscreenCanvas) {
+    constructor(canvas: OffscreenCanvas) {
         this.loadImage()
         this.ctx = canvas.getContext('2d')
         this.width = canvas.width
@@ -33,12 +38,14 @@ class ThumbsUpAni {
     // 初始化图片
     private loadImage() {
         const imgs = [
-            'https://img.qlchat.com/qlLive/activity/image/5CAU65L6-OQ69-NQPF-1586948149307-8UQ7KWPFM31O.png',
-            'https://img.qlchat.com/qlLive/activity/image/42X5BA7B-TVET-G6WN-1586948154513-I19M2Y723U7P.png',
-            'https://img.qlchat.com/qlLive/activity/image/61GHY4BP-PZQZ-V8WP-1586948159404-AGL1I2OT571F.png',
-            'https://img.qlchat.com/qlLive/activity/image/36WBA8ZN-26PK-RF72-1586948164293-61CYDBCW4U9X.png',
-            'https://img.qlchat.com/qlLive/activity/image/8E8HLOV3-3MUF-MT76-1586948168892-Y9WULXVROT24.png',
-            'https://img.qlchat.com/qlLive/activity/image/8XFOQBCX-7NQQ-PFLA-1586948173302-ONRGPAAZN52O.png'
+            'https://img.qlchat.com/qlLive/activity/image/LCP31WOW-4IMP-NLAE-1620807553972-OYWXNLLNFNJI.png',
+            'https://img.qlchat.com/qlLive/activity/image/LCP31WOW-4IMP-NLAE-1620807553972-OYWXNLLNFNJI.png',
+            'https://img.qlchat.com/qlLive/activity/image/LCP31WOW-4IMP-NLAE-1620807553972-OYWXNLLNFNJI.png',
+            'https://img.qlchat.com/qlLive/activity/image/LCP31WOW-4IMP-NLAE-1620807553972-OYWXNLLNFNJI.png',
+            'https://img.qlchat.com/qlLive/activity/image/LCP31WOW-4IMP-NLAE-1620807553972-OYWXNLLNFNJI.png',
+            'https://img.qlchat.com/qlLive/activity/image/LCP31WOW-4IMP-NLAE-1620807553972-OYWXNLLNFNJI.png',
+            'https://img.qlchat.com/qlLive/activity/image/LCP31WOW-4IMP-NLAE-1620807553972-OYWXNLLNFNJI.png',
+            'https://img.qlchat.com/qlLive/activity/image/LCP31WOW-4IMP-NLAE-1620807553972-OYWXNLLNFNJI.png',
         ]
         const promiseAll: Array<Promise<any>> = []
         imgs.forEach((img: string) => {
@@ -166,12 +173,12 @@ class ThumbsUpAni {
     }
 }
 let thumbsUpAni
+
 // console.log(self) // 除了不能操作dome以外indexDB都能操作, postMessage不能传递函数这些东东
 self.addEventListener('message', ({ data }) => {
     if (data.canvas) {
         const canvas = data.canvas
-        console.log(1212)
-        thumbsUpAni = new ThumbsUpAni(canvas)
+        thumbsUpAni = new SendLove(canvas)
     } else {
         thumbsUpAni.likeStart(data.num)
         // self.postMessage({ // 不传递函数
@@ -181,3 +188,4 @@ self.addEventListener('message', ({ data }) => {
         // })
     }
 })
+

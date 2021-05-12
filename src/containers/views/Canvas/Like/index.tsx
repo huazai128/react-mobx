@@ -12,38 +12,39 @@ let thumbsInter: any = null
  */
 const Link: React.FC<LinkProps> = ({  }: LinkProps) => {
     const canvasNode = useRef<HTMLCanvasElement>(null)
-    const [cavasAni, setCavasAni] = useState<ThumbsUpAni>(null)
+    const [cavasAni, setCavasAni] = useState<SendLove>(null)
     // 默认结尾值为0
     const [praiseLast, setPraiseLast] = useState<number>(0)
     const [thumbsStart, setTumbsStart] = useState<number>(0)
     const [newWorker, setNewWorker] = useState<Worker>(null)
     useEffect(() => {
+        const init = async () => {
+            // offscreenCanvas离屏画卡很多浏览器不兼容, offscreenCanvas可以在window下可以使用也可以在web worker下使用， canvas只能在window下使用
+            if ('OffscreenCanvas' in window) {
+                const worker = new Worker('./like.worker', { type: 'module' })
+                const offscreenCanvas = canvasNode.current.transferControlToOffscreen()
+                worker.postMessage({ canvas: offscreenCanvas }, [offscreenCanvas as OffscreenCanvas])
+                worker.addEventListener('error', error => {
+                    console.log(error)
+                })
+                setNewWorker(worker)
+            } else {
+                const thumbsUpAni = new SendLove(canvasNode.current)
+                setCavasAni(thumbsUpAni)
+            }
+        }
         init()
     }, [])
-    const init = async () => {
-        const worker = new Worker('./like.worker', { type: 'module' })
-        // offscreenCanvas离屏画卡很多浏览器不兼容, offscreenCanvas可以在window下可以使用也可以在web worker下使用， canvas只能在window下使用
-        if ('OffscreenCanvas' in window) {
-            const offscreenCanvas = canvasNode.current.transferControlToOffscreen()
-            worker.postMessage({ canvas: offscreenCanvas }, [offscreenCanvas as OffscreenCanvas])
-            setNewWorker(worker)
-        } else {
-            const thumbsUpAni = new ThumbsUpAni(canvasNode.current)
-            setCavasAni(thumbsUpAni)
-        }
-        worker.addEventListener('error', error => {
-            console.log(error)
-        })
-    }
+    // 触发点赞
     const postLike = useCallback(() => {
         if ('OffscreenCanvas' in window) {
-            console.log(newWorker, 'newWorker')
             newWorker.postMessage({ num: 10 })
         } else {
             thumbsUp(10)
         }
         thumbsUp(10)
     }, [cavasAni, praiseLast, newWorker])
+    
     // 处理大量数据绘制重叠问题
     const thumbsUp = (num: number) => {
         // 添加的数据数据小于阈值 则返回
@@ -69,7 +70,6 @@ const Link: React.FC<LinkProps> = ({  }: LinkProps) => {
                 return false
             }
             curThumbsStart++
-            cavasAni.likeStart()
             if (isFirst) {
                 isFirst = false
                 time = Math.round(5000 / diff)
@@ -95,36 +95,43 @@ interface RenderModel {
 
 /**
  * 正常写法点赞动效
- * @class ThumbsUpAni
+ * @class SendLove
  */
-class ThumbsUpAni {
-    private ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
-    private width: number
-    private height: number
-    private listImage: Array<CanvasImageSource>
-    public renderList: Array<RenderModel> = []
-    private scanning: boolean = false
-    // 放大时间
-    private scaleTime: number = 0.1
-    constructor(canvas: HTMLCanvasElement | OffscreenCanvas) {
+class SendLove {
+    private ctx: CanvasRenderingContext2D 
+    private width: number                        // 宽
+    private height: number                       // 高
+    private listImage: Array<CanvasImageSource>  // 图片集合
+    public renderList: Array<RenderModel> = []   // 点赞集合
+    private scanning: boolean = false            // 是否在绘制
+    private scaleTime: number = 0.1              // 缩放时间    
+
+    constructor(canvas: HTMLCanvasElement) {
         this.loadImage()
         this.ctx = canvas.getContext('2d')
         this.width = canvas.width
         this.height = canvas.height
     }
-    // 初始化图片
+
+    /**
+     * 加载图片
+     * @private
+     * @memberof SendLove
+     */
     private loadImage() {
         const imgs = [
-            'https://img.qlchat.com/qlLive/activity/image/5CAU65L6-OQ69-NQPF-1586948149307-8UQ7KWPFM31O.png',
-            'https://img.qlchat.com/qlLive/activity/image/42X5BA7B-TVET-G6WN-1586948154513-I19M2Y723U7P.png',
-            'https://img.qlchat.com/qlLive/activity/image/61GHY4BP-PZQZ-V8WP-1586948159404-AGL1I2OT571F.png',
-            'https://img.qlchat.com/qlLive/activity/image/36WBA8ZN-26PK-RF72-1586948164293-61CYDBCW4U9X.png',
-            'https://img.qlchat.com/qlLive/activity/image/8E8HLOV3-3MUF-MT76-1586948168892-Y9WULXVROT24.png',
-            'https://img.qlchat.com/qlLive/activity/image/8XFOQBCX-7NQQ-PFLA-1586948173302-ONRGPAAZN52O.png'
+            'https://img.qlchat.com/qlLive/activity/image/LCP31WOW-4IMP-NLAE-1620807553972-OYWXNLLNFNJI.png',
+            'https://img.qlchat.com/qlLive/activity/image/LCP31WOW-4IMP-NLAE-1620807553972-OYWXNLLNFNJI.png',
+            'https://img.qlchat.com/qlLive/activity/image/LCP31WOW-4IMP-NLAE-1620807553972-OYWXNLLNFNJI.png',
+            'https://img.qlchat.com/qlLive/activity/image/LCP31WOW-4IMP-NLAE-1620807553972-OYWXNLLNFNJI.png',
+            'https://img.qlchat.com/qlLive/activity/image/LCP31WOW-4IMP-NLAE-1620807553972-OYWXNLLNFNJI.png',
+            'https://img.qlchat.com/qlLive/activity/image/LCP31WOW-4IMP-NLAE-1620807553972-OYWXNLLNFNJI.png',
+            'https://img.qlchat.com/qlLive/activity/image/LCP31WOW-4IMP-NLAE-1620807553972-OYWXNLLNFNJI.png',
+            'https://img.qlchat.com/qlLive/activity/image/LCP31WOW-4IMP-NLAE-1620807553972-OYWXNLLNFNJI.png',
         ]
-        const promiseAll: Array<Promise<any>> = []
+        const promiseAll: Array<Promise<HTMLImageElement>> = []
         imgs.forEach((img: string) => {
-            const p = new Promise((resolve, reject) => {
+            const p = new Promise<HTMLImageElement>((resolve, reject) => {
                 const image = new Image()
                 image.src = img
                 image.crossOrigin = 'Anonymous'
@@ -134,21 +141,34 @@ class ThumbsUpAni {
         })
         Promise.all(promiseAll)
             .then(lists => {
-                this.listImage = lists.filter((img: ImageData) => img && img.width > 0)
+                this.listImage = lists.filter((img: HTMLImageElement) => img && img.width > 0)
             })
             .catch(err => {
                 console.error('图片加载失败...', err)
             })
     }
-    // 获取指定区域的随机数
+
+    /**
+     * 获取指定区域的随机数
+     * @private
+     * @param {number} min
+     * @param {number} max
+     * @returns {number}
+     * @memberof SendLove
+     */
     private getRandom(min: number, max: number): number {
         return min + Math.floor(Math.random() * (max - min + 1))
     }
 
-    // 绘制
+    /**
+     *  绘制每一个点赞；这里使用了闭包，初始化
+     * @private
+     * @returns {(Loop<number, boolean | void>)}
+     * @memberof SendLove
+     */
     private createRender(): Loop<number, boolean | void> {
         if (!this.listImage.length) return null
-        // 一下是在创建时，初始化默认值
+        // 以下是在创建时，初始化默认值
         const context = this.ctx
         // 随机取出scale值
         const basicScale = [0.6, 0.9, 1.2][this.getRandom(0, 2)]
@@ -203,7 +223,11 @@ class ThumbsUpAni {
             context.restore()
         }
     }
-    // 扫描渲染列表
+    /**
+     * 扫描
+     * @private
+     * @memberof SendLove
+     */
     private scan() {
         // 清屏（清除上一次绘制内容）
         this.ctx.clearRect(0, 0, this.width, this.height)
@@ -229,7 +253,11 @@ class ThumbsUpAni {
             }
         }
     }
-    // 点赞开始
+    /**
+     * 提供对外的点赞的接口
+     * @returns
+     * @memberof SendLove
+     */
     public likeStart() {
         // 初始化礼物数据、回调函数
         const render = this.createRender()
