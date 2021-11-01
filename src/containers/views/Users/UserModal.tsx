@@ -2,7 +2,6 @@ import React from 'react'
 import { observer } from 'mobx-react'
 import { Modal, Form, Input, Select } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
-
 import useRootStore from '@store/useRootStore'
 
 const FormItem = Form.Item
@@ -54,7 +53,7 @@ function UserModal({ visible, onCancel, user, form }: IProps) {
                             userStore.getUsers()
                         }
                         onCancel()
-                    } catch (err) {}
+                    } catch (err) { }
                     toggleLoading()
                 }
             }

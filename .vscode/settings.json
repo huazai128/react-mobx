@@ -1,16 +1,27 @@
 {
-    "editor.formatOnSave": true,
-    "eslint.validate": [
-        { "language": "javascript", "autoFix": true },
-        { "language": "typescript", "autoFix": true },
-        { "language": "typescriptreact", "autoFix": true }
-    ],
-    "eslint.autoFixOnSave": true,
-    "typescript.tsdk": "node_modules/typescript/lib",
-    "prettier.stylelintIntegration": true,
-    "scss.lint.validProperties": ["composes"],
-    "jest.autoEnable": false,
-    "editor.codeActionsOnSave": {
-        "source.fixAll.eslint": true
+  "editor.formatOnSave": true,
+  "eslint.validate": [
+    {
+      "language": "javascript",
+      "autoFix": true
+    },
+    {
+      "language": "typescript",
+      "autoFix": true
+    },
+    {
+      "language": "typescriptreact",
+      "autoFix": true
     }
+  ],
+  "eslint.autoFixOnSave": true,
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "prettier.stylelintIntegration": true,
+  "scss.lint.validProperties": [
+    "composes"
+  ],
+  "jest.autoEnable": false,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  }
 }

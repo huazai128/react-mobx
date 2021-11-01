@@ -21,7 +21,8 @@ export const asynchronousComponents = {
     Broadway: loadComponent(() => import(/* webpackChunkName: "broadway" */ '@views/LiveVideo/Broadway')),
     Yuv: loadComponent(() => import(/* webpackChunkName: "broadway" */ '@views/LiveVideo/Yuv')),
     Users: loadComponent(() => import(/* webpackChunkName: "users" */ '@views/Users')),
-    Upload: loadComponent(() => import(/* webpackChunkName: "Upload" */ '@views/Upload'))
+    Upload: loadComponent(() => import(/* webpackChunkName: "Upload" */ '@views/Upload')),
+    IndexDB: loadComponent(() => import(/* webpackChunkName: "IndexDB" */ '@views/IndexDB'))
 }
 
 // all routers key
@@ -156,6 +157,14 @@ export const menu: IMenu[] = [
     },
     {
         id: 6,
+        path: '/s',
+        title: 'IndexDB',
+        icon: 'book',
+        component: 'IndexDB',
+        exact: true
+    },
+    {
+        id: 9,
         path: '/users',
         title: '用户管理',
         icon: 'user',

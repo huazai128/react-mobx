@@ -22,9 +22,13 @@ declare interface NumberObject {
     [propName: string]: number
 }
 
-declare interface Player {}
+declare interface Player { }
 
 declare interface Window {
     // 函数重载
     postMessage(message: any, targetOrigin?: string, transfer?: Transferable[]): void
+
+    webkitIndexedDB: any
+    mozIndexedDB: any
+    msIndexedDB: any
 }
