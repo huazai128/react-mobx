@@ -23,5 +23,6 @@
   "jest.autoEnable": false,
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
-  }
+  },
+  "git.enableCommitSigning": true
 }

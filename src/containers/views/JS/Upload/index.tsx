@@ -16,10 +16,10 @@ function Upload() {
                 </Row>
                 <Row style={{ marginBottom: '30px' }} gutter={24}>
                     <Col span={4} offset={4}>
-                        <input type="file" disabled={ status !== 'WAIT' } onChange={ beforeUpload }></input>
+                        <input type="file" disabled={status !== 'WAIT'} onChange={beforeUpload}></input>
                     </Col>
                     <Col span={3}>
-                        <Button onClick={ changeFile }>上传</Button>
+                        <Button onClick={changeFile}>上传</Button>
                     </Col>
                     <Col span={3}>
                         <Button>恢复</Button>

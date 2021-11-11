@@ -18,7 +18,7 @@ function Home() {
                     <Router>
                         <Switch>
                             {menu.map(m => {
-                                if (!m.path) {
+                                if (!m.path || m.isHide) {
                                     return null
                                 }
                                 return (

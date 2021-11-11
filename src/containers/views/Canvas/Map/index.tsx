@@ -20,9 +20,9 @@ interface IPos {
 }
 
 class MapCanvas {
-    private canvasRef:HTMLCanvasElement
+    private canvasRef: HTMLCanvasElement
     private ctx: CanvasRenderingContext2D
-    private img: HTMLImageElement 
+    private img: HTMLImageElement
     private startPos: IPos = { x: 0, y: 0 } // 开始坐标
     private touchs: React.TouchList         // 存储多手指位置
     private movePos: IPos                   // 存储移动坐标位置
@@ -34,7 +34,7 @@ class MapCanvas {
     private MAX_SCALE: number = 5           // 最大缩放
     constructor(canvas: HTMLCanvasElement) {
         this.canvasRef = canvas
-        const { width, height} = this.canvasRef.getBoundingClientRect();
+        const { width, height } = this.canvasRef.getBoundingClientRect();
         this.canvasRef.width = width
         this.canvasRef.height = height
         this.ctx = canvas.getContext('2d')
@@ -71,10 +71,10 @@ class MapCanvas {
         return new Promise((reject, resolve) => {
             this.img = new Image();
             this.img.crossOrigin = 'Anonymous'
-            this.img.onload = function() {
+            this.img.onload = function () {
                 reject('');
             }
-            this.img.onerror = function(error) {
+            this.img.onerror = function (error) {
                 console.error(error, 'error=====')
                 resolve(error)
             }
@@ -93,7 +93,7 @@ class MapCanvas {
         // 绘制图片
         this.ctx.drawImage(
             this.img,
-            0,0,
+            0, 0,
             this.img.width,
             this.img.height,
             this.imgX,
@@ -109,7 +109,7 @@ class MapCanvas {
      * @param {(React.MouseEvent<HTMLElement> | React.TouchEvent<HTMLElement>)} e
      * @memberof MapCanvas
      */
-    private startMouse(e: React.MouseEvent<HTMLElement> ) {
+    private startMouse(e: React.MouseEvent<HTMLElement>) {
         const { pageX, pageY } = e;
         this.isMove = true
         this.startPos = this.windowToCanvas(pageX, pageY)
@@ -125,7 +125,7 @@ class MapCanvas {
         const { touches } = e
         this.isMove = true;
         // 判断是否为多手指
-        if(touches.length < 2) {
+        if (touches.length < 2) {
             const { clientX, clientY } = touches[0]
             this.startPos = this.windowToCanvas(clientX, clientY) // clientX：触摸点相对浏览器窗口的位置
         } else {
@@ -139,14 +139,14 @@ class MapCanvas {
      * @param {(React.MouseEvent<HTMLElement> } e
      * @memberof MapCanvas
      */
-    private moveMouse(e: React.MouseEvent<HTMLElement> ) {
-        if(!this.isMove) return false
+    private moveMouse(e: React.MouseEvent<HTMLElement>) {
+        if (!this.isMove) return false
         const { pageX, pageY } = e
         this.movePos = this.windowToCanvas(pageX, pageY)
         const x = this.movePos.x - this.startPos.x, y = this.movePos.y - this.startPos.y;
         this.imgX += x;
         this.imgY += y;
-        this.startPos = {...this.movePos} // 更新最新位置
+        this.startPos = { ...this.movePos } // 更新最新位置
         this.drawImage()
     }
 
@@ -156,43 +156,43 @@ class MapCanvas {
      * @param {React.TouchEvent<HTMLElement>} e
      * @memberof MapCanvas
      */
-    private moveTouch(e:  React.TouchEvent<HTMLElement>) {
-        if(!this.isMove || !e.touches) return false
+    private moveTouch(e: React.TouchEvent<HTMLElement>) {
+        if (!this.isMove || !e.touches) return false
         const { clientX, clientY } = e.touches[0]
         // 如果是单指
-        if(e.touches.length < 2) {
+        if (e.touches.length < 2) {
             this.movePos = this.windowToCanvas(clientX, clientY)
             const x = this.movePos.x - this.startPos.x, y = this.movePos.y - this.startPos.y;
             this.imgX += x;
             this.imgY += y;
-            this.startPos = {...this.movePos} // 更新最新位置
+            this.startPos = { ...this.movePos } // 更新最新位置
         } else {
             const now = e.touches
             // 处理位置
             const pos = this.windowToCanvas(clientX, clientY)
-            const newPos = {x: Number(((pos.x-this.imgX)/this.imgScale).toFixed(2)) , y: Number(((pos.y-this.imgY)/this.imgScale).toFixed(2))};
-            const curPos = this.getDistance(now[0],now[1]); // 当前位置
+            const newPos = { x: Number(((pos.x - this.imgX) / this.imgScale).toFixed(2)), y: Number(((pos.y - this.imgY) / this.imgScale).toFixed(2)) };
+            const curPos = this.getDistance(now[0], now[1]); // 当前位置
             const startPos = this.getDistance(this.touchs[0], this.touchs[1]); // 前一个位置
             // 判断位置是放大还是缩小
-            if(curPos > startPos) { // 放大
+            if (curPos > startPos) { // 放大
                 this.imgScale += 0.03
-                if(this.imgScale >= this.MAX_SCALE) {
+                if (this.imgScale >= this.MAX_SCALE) {
                     this.imgScale = this.MAX_SCALE
                 }
             } else {
                 this.imgScale -= 0.03
-                if(this.imgScale <= this.MINIMUM_SCALE) {
+                if (this.imgScale <= this.MINIMUM_SCALE) {
                     this.imgScale = this.MINIMUM_SCALE
                 }
             }
             // 计算图片的位置， 更具当前缩放比例，计算新的位置
-            this.imgX = (1-this.imgScale)*newPos.x+(pos.x-newPos.x);
-            this.imgY = (1-this.imgScale)*newPos.y+(pos.y-newPos.y);
+            this.imgX = (1 - this.imgScale) * newPos.x + (pos.x - newPos.x);
+            this.imgY = (1 - this.imgScale) * newPos.y + (pos.y - newPos.y);
             this.touchs = now
         }
         this.drawImage()
     }
-    
+
     /**
      * 拖拽结束
      * @private
@@ -200,7 +200,7 @@ class MapCanvas {
      * @memberof MapCanvas
      */
     private endMouse(e: React.MouseEvent<HTMLElement> | React.TouchEvent<HTMLElement>) {
-       this.isMove = false
+        this.isMove = false
     }
 
     /**
@@ -209,26 +209,26 @@ class MapCanvas {
      * @param {(React.WheelEvent<HTMLElement> & { wheelDelta: number })} e
      * @memberof MapCanvas
      */
-    private mouseWheel(e: React.WheelEvent<HTMLElement> & { wheelDelta: number } ) {
+    private mouseWheel(e: React.WheelEvent<HTMLElement> & { wheelDelta: number }) {
         const { clientX, clientY, wheelDelta } = e
         const pos = this.windowToCanvas(clientX, clientY)
         // 计算图片的位置
-        const newPos = { x: Number(((pos.x - this.imgX)/this.imgScale).toFixed(2)), y: Number(((pos.y - this.imgY)/this.imgScale).toFixed(2)) }
+        const newPos = { x: Number(((pos.x - this.imgX) / this.imgScale).toFixed(2)), y: Number(((pos.y - this.imgY) / this.imgScale).toFixed(2)) }
         // 判断是放大还是缩小
-        if(wheelDelta > 0) { // 放大
+        if (wheelDelta > 0) { // 放大
             this.imgScale += 0.05
-            if(this.imgScale >= this.MAX_SCALE) {
+            if (this.imgScale >= this.MAX_SCALE) {
                 this.imgScale = this.MAX_SCALE
             }
         } else { // 缩小
             this.imgScale -= 0.05
-            if(this.imgScale <= this.MINIMUM_SCALE) {
+            if (this.imgScale <= this.MINIMUM_SCALE) {
                 this.imgScale = this.MINIMUM_SCALE
             }
         }
         // 计算图片的位置， 根据当前缩放比例，计算新的位置
-        this.imgX = (1-this.imgScale)*newPos.x+(pos.x-newPos.x);
-        this.imgY = (1-this.imgScale)*newPos.y+(pos.y-newPos.y);
+        this.imgX = (1 - this.imgScale) * newPos.x + (pos.x - newPos.x);
+        this.imgY = (1 - this.imgScale) * newPos.y + (pos.y - newPos.y);
         this.drawImage(); // 开始绘制图片
     }
 
@@ -241,9 +241,9 @@ class MapCanvas {
      * @memberof MapCanvas
      */
     private windowToCanvas(startX: number, startY: number): IPos {
-        const { left, top, width, height} = this.canvasRef.getBoundingClientRect();
+        const { left, top, width, height } = this.canvasRef.getBoundingClientRect();
         return {
-            x: startX - left - (width - this.canvasRef.width) / 2, 
+            x: startX - left - (width - this.canvasRef.width) / 2,
             y: startY - top - (height - this.canvasRef.height) / 2
         }
     }
@@ -264,13 +264,13 @@ class MapCanvas {
 
 }
 
-const CanvasMap:React.FC<IP> = ({}: IP) => {
+const CanvasMap: React.FC<IP> = ({ }: IP) => {
     const canvasRef = React.useRef<HTMLCanvasElement>()
     React.useEffect(() => {
         new MapCanvas(canvasRef.current);
     }, [])
     return (
-        <div className={ styles['map-box'] }>
+        <div className={styles['map-box']}>
             <div>
                 <canvas ref={canvasRef}></canvas>
             </div>

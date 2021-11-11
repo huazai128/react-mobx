@@ -21,8 +21,11 @@ export const asynchronousComponents = {
     Broadway: loadComponent(() => import(/* webpackChunkName: "broadway" */ '@views/LiveVideo/Broadway')),
     Yuv: loadComponent(() => import(/* webpackChunkName: "broadway" */ '@views/LiveVideo/Yuv')),
     Users: loadComponent(() => import(/* webpackChunkName: "users" */ '@views/Users')),
-    Upload: loadComponent(() => import(/* webpackChunkName: "Upload" */ '@views/Upload')),
-    IndexDB: loadComponent(() => import(/* webpackChunkName: "IndexDB" */ '@views/IndexDB'))
+    Upload: loadComponent(() => import(/* webpackChunkName: "Upload" */ '@views/JS/Upload')),
+    IndexDB: loadComponent(() => import(/* webpackChunkName: "IndexDB" */ '@views/JS/IndexDB')),
+    Sticky: loadComponent(() => import(/* webpackChunkName: "Sticky" */ '@views/CSS/Sticky/index')),
+    SendBox: loadComponent(() => import(/* webpackChunkName: "SendBox" */ '@views/CSS/SendBox/index')),
+    MiteEditor: loadComponent(() => import(/* webpackChunkName: "MiteEditor" */ '@views/Canvas/MiteEditor/index')),
 }
 
 // all routers key
@@ -30,17 +33,29 @@ export type AsynchronousComponentKeys = keyof typeof asynchronousComponents
 
 export interface IMenu {
     title: string
-    id: number
+    id?: number
     pid?: number
     path?: string
     icon?: string
     component?: AsynchronousComponentKeys
     exact?: boolean
+    isHide?: boolean
 }
 
 export interface IMenuInTree extends IMenu {
     children?: IMenuInTree[]
 }
+export const routes: IMenu[] = [
+    {
+        id: 61,
+        path: '/sticky',
+        title: 'Position Sticky',
+        icon: 'book',
+        component: 'Sticky',
+        exact: true,
+        isHide: true
+    },
+]
 
 export const menu: IMenu[] = [
     {
@@ -113,6 +128,15 @@ export const menu: IMenu[] = [
         exact: true
     },
     {
+        pid: 3,
+        id: 33,
+        path: '/editor',
+        title: '画卡',
+        icon: 'book',
+        component: 'MiteEditor',
+        exact: true
+    },
+    {
         id: 4,
         path: '/live',
         title: '直播',
@@ -149,6 +173,14 @@ export const menu: IMenu[] = [
     },
     {
         id: 5,
+        path: '/js',
+        title: 'JS插件',
+        icon: 'book',
+        exact: true
+    },
+    {
+        pid: 5,
+        id: 51,
         path: '/upload',
         title: '上传',
         icon: 'upload',
@@ -156,11 +188,34 @@ export const menu: IMenu[] = [
         exact: true
     },
     {
-        id: 6,
-        path: '/s',
+        id: 52,
+        pid: 5,
+        path: '/indexdb',
         title: 'IndexDB',
         icon: 'book',
         component: 'IndexDB',
+        exact: true
+    },
+    {
+        id: 6,
+        path: '/css',
+        title: 'CSS相关',
+        icon: 'book',
+        exact: true
+    },
+    {
+        id: 61,
+        pid: 6,
+        path: '/sticky',
+        title: 'Position Sticky',
+        isHide: true
+    },
+    {
+        id: 62,
+        pid: 6,
+        path: '/sendbox',
+        title: 'svg和动画',
+        component: 'SendBox',
         exact: true
     },
     {

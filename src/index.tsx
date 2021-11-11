@@ -1,4 +1,5 @@
 import './index.scss'
+import './styles/_flex.less'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { configure } from 'mobx'
