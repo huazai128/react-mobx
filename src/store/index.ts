@@ -24,3 +24,7 @@ export { default as uploadStore } from './uploadStore'
 export { default as cardStore } from './cardStore'
 
 export { default as maxUploadStore } from './maxUploadStore'
+
+export { default as canvasStore } from './canvasStore'
+
+

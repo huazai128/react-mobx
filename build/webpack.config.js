@@ -30,7 +30,6 @@ const conf = {
                 extensions: constants.FILE_EXTENSIONS
             })
         ],
-        alias: { mobx: resolve('node_modules/mobx/lib/mobx.es6.js') }
     },
     module: {
         rules: [...styleRules, ...jsRules, ...fileRules]
@@ -47,7 +46,7 @@ if (process.env.NODE_ENV === 'development') {
         hot: true,
         disableHostCheck: true,
         host: '0.0.0.0',
-        after: function() {
+        after: function () {
             openBrowser(`http://localhost:${config.devPort}`)
         }
     }

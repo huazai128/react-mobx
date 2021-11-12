@@ -14,7 +14,7 @@ declare global {
      * @interface RouterStore
      * @extends {_RouterStore}
      */
-    interface RouterStore extends _RouterStore {}
+    interface RouterStore extends _RouterStore { }
 
     /**
      * type for all store
@@ -32,7 +32,7 @@ declare global {
         searchStore: ISearchStore.SearchStore
         maxUploadStore: IMaxUploadStore.MaxUploadStore
         cardStore: ICardStore.CardStore
-
+        canvasStore: ICanvasStore.CanvasStore
         routerStore: RouterStore
     }
 }
