@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react'
-import { Button, InputNumber } from 'antd';
+import React, { useState, useCallback, useRef, useEffect, Fragment } from 'react'
+import { Button, InputNumber, Modal } from 'antd';
 import { fabric } from 'fabric'
 import { drawArrow, download } from '@utils/util';
 import { nanoid } from 'nanoid';
@@ -45,8 +45,10 @@ const deleteIcon = "data:image/svg+xml,%3C%3Fxml version='1.0' encoding='utf-8'%
 
 const Canvas = () => {
     const canvasRef = useRef(null)
-    const [size, setSize] = useState([750, 600]);
-    const { initAttr, controllType } = useRootStore().canvasStore
+    const [size, setSize] = useState([375, 667]);
+    const [isShow, setIsShow] = useState(false);
+    const [imgUrl, setImgUrl] = useState('');
+    const { initAttr, controllType, operateData, prevStep, nextStep } = useRootStore().canvasStore
     useEffect(() => {
         const canvas = new fabric.Canvas('canvas', {
             backgroundColor: '#fff'
@@ -166,6 +168,7 @@ const Canvas = () => {
                         break;
                 }
                 shape && canvas.add(shape)
+                operateData(canvas.toDatalessJSON());
             }
         })
         // 更新属性
@@ -177,6 +180,7 @@ const Canvas = () => {
                 obj.set({ ...data })
                 // 重新渲染
                 canvas.renderAll();
+                operateData(canvas.toDatalessJSON());
             }
         })
         // 保存图片
@@ -190,6 +194,7 @@ const Canvas = () => {
         })
         // 保存到模版中
         PubSub.subscribe('saveTpl', (msg, data) => {
+            // 获取数据
             const json = canvas.toDatalessJSON();
             const id = nanoid(8);
             const tpls = JSON.parse(localStorage.getItem('tpls') || "{}")
@@ -209,6 +214,7 @@ const Canvas = () => {
         PubSub.subscribe('renderJson', (msg, data) => {
             canvas.clear();
             canvas.backgroundColor = 'rgba(255,255,255,1)';
+            // 渲染数据
             canvas.loadFromJSON(data, canvas.renderAll.bind(canvas))
         })
         PubSub.subscribe('saveSvg', () => {
@@ -222,17 +228,33 @@ const Canvas = () => {
             // 鼠标按下
             canvas.on('mouse:down', (e) => {
                 if (e.target) {
+                    // 获取当前操作元素类型
                     const type = e.target.get('type');
-                    console.log(type, ' type==')
+                    // 获取当前元素绘制信息
                     const {
                         fill = '#0066cc',
                         stroke,
-                        strokeWidth = 0
+                        strokeWidth = 0,
+                        fontFamily,
+                        fontSize,
+                        fontWeight,
+                        underline,
+                        textAlign = 'left',
+                        shadow = null
                     } = e.target
+                    let parmas: ICanvasStore.AttrModel = { fill, stroke: stroke || '', strokeWidth: strokeWidth }
+                    if (Object.is(type, 'i-text')) {
+                        parmas = { ...parmas, fontFamily, fontSize, fontWeight, underline, textAlign, shadow }
+                    }
                     // 初始化属性
-                    initAttr({ fill, stroke: stroke || '', strokeWidth: strokeWidth })
+                    initAttr(parmas)
                     controllType(type)
                 } else {
+                    initAttr({
+                        fill: '#0066cc',
+                        stroke: '',
+                        strokeWidth: 0,
+                    })
                     controllType('')
                 }
             })
@@ -241,8 +263,10 @@ const Canvas = () => {
 
             })
             // 鼠标放开
-            canvas.on('mouse:up', () => {
-
+            canvas.on('mouse:up', (e) => {
+                if (e.target) {
+                    operateData(canvas.toDatalessJSON());
+                }
             })
         }
         init();
@@ -251,26 +275,56 @@ const Canvas = () => {
     const updateSize = useCallback((type: 0 | 1, v: number) => {
 
     }, [])
+
+    // 清空画布
+    const clear = () => {
+        canvasRef.current.clear(); //
+        canvasRef.current.backgroundColor = 'rgba(255,255,255,1)';
+    }
+
+    // 预览
+    const handlePreview = () => {
+        const ext = 'png';
+        const base64 = canvasRef.current.toDataURL({
+            format: ext,
+            enableRetinaScaling: true
+        })
+        setImgUrl(base64)
+        setIsShow(true)
+    }
+
+    // 关闭预览
+    const closeModal = useCallback(() => {
+        setIsShow(false)
+        setImgUrl('')
+    }, [])
     return (
-        <section className="me-canvas flex-g-1">
-            <div className="controlWrap">
-                <div className="leftArea">
-                    <div>
-                        <span style={{ marginRight: '10px' }}>画布大小: </span>
-                        <InputNumber size="small" min={1} defaultValue={size[0]} onChange={(v) => updateSize(0, v)} style={{ width: 60, marginRight: 10 }} />
-                        <InputNumber size="small" min={1} defaultValue={size[1]} disabled style={{ width: 60 }} />
+        <Fragment>
+            <section className="me-canvas flex-g-1">
+                <div className="controlWrap">
+                    <div className="leftArea">
+                        <div>
+                            <span style={{ marginRight: '10px' }}>画布大小: </span>
+                            <InputNumber size="small" min={1} defaultValue={size[0]} onChange={(v) => updateSize(0, v)} style={{ width: 60, marginRight: 10 }} />
+                            <InputNumber size="small" min={1} defaultValue={size[1]} disabled style={{ width: 60 }} />
+                        </div>
+                    </div>
+                    <div className="rightArea">
+                        <Button className="btn" size="small">背景</Button>
+                        <Button className="btn" size="small" onClick={clear}>清空</Button>
+                        <Button className="btn" size="small" onClick={handlePreview}>预览</Button>
+                        <Button className="btn" size="small" onClick={prevStep}>撤回</Button>
+                        <Button className="btn" size="small" onClick={nextStep}>恢复</Button>
                     </div>
                 </div>
-                <div className="rightArea">
-                    <Button className="btn" size="small">背景</Button>
-                    <Button className="btn" size="small">清空</Button>
-                    <Button className="btn" size="small">预览</Button>
+                <div className="flex-hcenter me-canvas-box">
+                    <canvas id="canvas" width={size[0]} height={size[1]}></canvas>
                 </div>
-            </div>
-            <div className="flex-hcenter">
-                <canvas id="canvas" width={750} height={size[1]}></canvas>
-            </div>
-        </section>
+            </section>
+            <Modal title="预览图片" visible={isShow} footer={null} onCancel={closeModal} width={size[0]}>
+                <img src={imgUrl} alt="" style={{ width: '100%' }} />
+            </Modal>
+        </Fragment>
     )
 }
 

@@ -1,5 +1,5 @@
 import React, { useState, useRef, Fragment } from 'react'
-import { Button, Tooltip, Modal, InputNumber, Upload, Input, Select } from 'antd';
+import { Button, Tooltip, Modal, InputNumber, Upload, Input, Select, Checkbox } from 'antd';
 import {
     ArrowLeftOutlined,
     FontSizeOutlined,
@@ -15,6 +15,7 @@ import useRootStore from '@store/useRootStore'
 import PubSub from 'pubsub-js'
 
 const options = ['normal', 'bold', 100, 200, 300, 400, 500, 600, 700, 800]
+const alignOpt = ['left', 'center', 'right']
 
 const Controller = observer(() => {
     const { insertElement, updateAttr, attrObj, type } = useRootStore().canvasStore
@@ -66,15 +67,25 @@ const Controller = observer(() => {
                 {Object.is(type, 'i-text') && (
                     <Fragment>
                         <span className="label">字体: </span>
-                        <Input size="small" style={{ width: 60 }} value={attrObj.fontFamily} onChange={(e) => updateAttr('fontFamily', e.target.value)} />
+                        <Input size="small" style={{ width: 115 }} value={attrObj.fontFamily} onChange={(e) => updateAttr('fontFamily', e.target.value)} />
                         <span className="label">字体大小: </span>
                         <InputNumber size="small" style={{ width: 60 }} value={attrObj.fontSize} onChange={(value) => updateAttr('fontSize', value)} />
                         <span className="label">粗体: </span>
-                        <Select size="small" style={{ width: 80 }}>
+                        <Select size="small" style={{ width: 115 }} value={attrObj.fontWeight} onChange={(value) => updateAttr('fontWeight', value)}>
                             {options.map((item) => (
                                 <Select.Option key={item} label={item} value={item}>{item}</Select.Option>
                             ))}
                         </Select>
+                        <span className="label">文本对齐: </span>
+                        <Select size="small" style={{ width: 115 }} value={attrObj.textAlign} onChange={(value) => updateAttr('textAlign', value)}>
+                            {alignOpt.map((item) => (
+                                <Select.Option key={item} label={item} value={item}>{item}</Select.Option>
+                            ))}
+                        </Select>
+                        <span className="label">阴影: </span>
+                        <Input size="small" style={{ width: 115 }} value={attrObj.shadow} onChange={(e) => updateAttr('shadow', e.target.value)} />
+                        <span className="label">下划线: </span>
+                        <Checkbox checked={attrObj.underline} onChange={(e) => updateAttr('underline', e.target.checked)}>下划线</Checkbox>
                     </Fragment>
                 )}
             </div>
@@ -133,7 +144,10 @@ const Controller = observer(() => {
                 title="保存模版"
                 visible={isTplShow}
                 onCancel={() => setIsTplShow(false)}
-                onOk={handleSaveTpl}
+                onOk={() => {
+                    setIsTplShow(false)
+                    handleSaveTpl();
+                }}
                 width={500}
                 okText="确定"
                 cancelText="取消"
@@ -143,7 +157,7 @@ const Controller = observer(() => {
                     <Input placeholder="请输入模版名称" ref={tplNameRef} />
                 </div>
             </Modal>
-        </section>
+        </section >
     )
 })
 
