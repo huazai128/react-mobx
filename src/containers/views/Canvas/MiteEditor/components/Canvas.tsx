@@ -196,6 +196,7 @@ const Canvas = () => {
         PubSub.subscribe('saveTpl', (msg, data) => {
             // 获取数据
             const json = canvas.toDatalessJSON();
+            console.log(JSON.stringify(json), 'jsoon=========')
             const id = nanoid(8);
             const tpls = JSON.parse(localStorage.getItem('tpls') || "{}")
             tpls[id] = { json, t: data };

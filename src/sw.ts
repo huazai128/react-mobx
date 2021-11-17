@@ -3,7 +3,7 @@ export default function registerServiceWorker() {
         window.addEventListener('load', () => {
             const { serviceWorker } = navigator
             serviceWorker
-                .register('/service-worker.js')
+                .register(`/service-worker.js?v=${new Date().getTime()}`)
                 .then(registration => {
                     console.log('SW registered: ', registration)
                 })
