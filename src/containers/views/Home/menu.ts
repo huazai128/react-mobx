@@ -25,6 +25,10 @@ export const asynchronousComponents = {
     IndexDB: loadComponent(() => import(/* webpackChunkName: "IndexDB" */ '@views/JS/IndexDB')),
     Sticky: loadComponent(() => import(/* webpackChunkName: "Sticky" */ '@views/CSS/Sticky/index')),
     SendBox: loadComponent(() => import(/* webpackChunkName: "SendBox" */ '@views/CSS/SendBox/index')),
+    Perspective: loadComponent(() => import(/* webpackChunkName: "Perspective" */ '@views/CSS/Perspective/index')),
+    BlendMode: loadComponent(() => import(/* webpackChunkName: "BlendMode" */ '@views/CSS/BlendMode/index')),
+    ClipPath: loadComponent(() => import(/* webpackChunkName: "ClipPath" */ '@views/CSS/ClipPath')),
+    BoxShadow: loadComponent(() => import(/* webpackChunkName: "BoxShadow" */ '@views/CSS/BoxShadow')),
     MiteEditor: loadComponent(() => import(/* webpackChunkName: "MiteEditor" */ '@views/Canvas/MiteEditor/index')),
 }
 
@@ -52,6 +56,14 @@ export const routes: IMenu[] = [
         title: 'Position Sticky',
         icon: 'book',
         component: 'Sticky',
+        exact: true,
+        isHide: true
+    },
+    {
+        id: 65,
+        path: '/clip-path',
+        title: 'clip-path属性',
+        component: 'ClipPath',
         exact: true,
         isHide: true
     },
@@ -216,6 +228,37 @@ export const menu: IMenu[] = [
         path: '/sendbox',
         title: 'svg和动画',
         component: 'SendBox',
+        exact: true
+    },
+    {
+        id: 63,
+        pid: 6,
+        path: '/perspective',
+        title: 'perspective视觉效果',
+        exact: true
+    },
+    {
+        id: 64,
+        pid: 6,
+        path: '/blend-mode',
+        title: 'mix-blend-mode属性',
+        component: 'BlendMode',
+        exact: true
+    },
+    {
+        id: 65,
+        pid: 6,
+        path: '/clip-path',
+        title: 'clip-path属性',
+        component: 'ClipPath',
+        isHide: true
+    },
+    {
+        id: 66,
+        pid: 6,
+        path: '/box-shadow',
+        title: 'box-shadow属性',
+        component: 'BoxShadow',
         exact: true
     },
     {

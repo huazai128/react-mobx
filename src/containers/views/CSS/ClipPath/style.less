@@ -1,0 +1,55 @@
+.cp-clip-box{
+    width: 375px;
+    height: 667px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    background: #e5e5e5;
+    .cp-clip-container{
+        width: 100%;
+        padding: 200px 0 1100px;
+        height: 100%;
+        &> div{
+            position: relative;
+            width: 100%;
+            height: 400px;
+        }
+        .img {
+            width: 100%;
+        }
+        .foreground,
+        .background {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            transition: clip-path 0.2s;
+        }
+    
+        .foreground {
+            z-index: 2;
+            background: url("http://source.unsplash.com/random/1920x1080") no-repeat
+            center center;
+            background-size: cover;
+            &:before {
+            font-size: 40px;
+            color: pink;
+            content: "foreground";
+            }
+        }
+    
+        .background {
+            z-index: 1;
+            background: url("http://source.unsplash.com/random/1921x1081") no-repeat
+            center center;
+            background-size: cover;
+            &:before {
+            font-size: 40px;
+            color: lightskyblue;
+            content: "background";
+            }
+        }
+    }
+    
+}

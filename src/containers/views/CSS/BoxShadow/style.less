@@ -1,0 +1,30 @@
+.bs-box{
+    background: linear-gradient(90deg, #fff, #bbb);
+    .bs-com-box{
+        margin-bottom: 32px;
+        & > div{
+            position: relative;
+            width: 280px;
+            height: 80px;
+            margin: 12px auto;
+            border-radius: 2px;
+            overflow: hidden;
+            color: #fff;
+            background: #e91e63;
+            
+        }
+        .shadow{
+            &::before{
+                position: absolute;
+                left: -12px;
+                top: -12px;
+                width: 24px;
+                height: 24px;
+                border-radius: 50%;
+                box-shadow: 0 0 0 50px #e91e63;
+                z-index: -1;
+                content: ''
+            }
+        }
+    }
+}
