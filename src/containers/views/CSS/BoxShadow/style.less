@@ -1,7 +1,12 @@
 .bs-box{
+    display: block;
     background: linear-gradient(90deg, #fff, #bbb);
     .bs-com-box{
         margin-bottom: 32px;
+        h4{
+            color:#333;
+            font-size: 14px;
+        }
         & > div{
             position: relative;
             width: 280px;
@@ -10,10 +15,14 @@
             border-radius: 2px;
             overflow: hidden;
             color: #fff;
-            background: #e91e63;
-            
+            p{
+                position: absolute;
+                margin: 0;
+                z-index: 2;
+            }
         }
         .shadow{
+            background: transparent;
             &::before{
                 position: absolute;
                 left: -12px;
@@ -21,10 +30,208 @@
                 width: 24px;
                 height: 24px;
                 border-radius: 50%;
-                box-shadow: 0 0 0 50px #e91e63;
-                z-index: -1;
+                box-shadow: 0 0 0 0px #e91e63;
+                z-index: 1;
+                animation: shadowmove 10s infinite linear;
                 content: ''
             }
         }
+        .shadow2{
+            &::before, &::after{
+                position: absolute;
+                width: 24px;
+                height: 24px;
+                border-radius: 50%;
+                box-shadow: 0 0 0 120px #e91e63;
+                z-index: 0;
+                content: '';
+            }
+            &::before{
+                left: -12px;
+                top: -12px;
+            }
+            &::after{
+                bottom: -12px;
+                right: -12px;
+            }
+        }
+        .linear{
+            background-size: 100% 100%;
+            background-image: radial-gradient(circle at 0 0, transparent 0,transparent 14px, #03A9F5 14px);
+            background-repeat: no-repeat;
+        }
+        .linea2{
+            filter: drop-shadow(0 0 3px #666);
+            background-size: 70% 70%;
+            background-image: 
+            radial-gradient(circle at 100% 100%, transparent 0,transparent 14px, #e91e63 14px),
+            radial-gradient(circle at 0 0, transparent 0,transparent 14px, #e91e63 14px),
+            radial-gradient(circle at 100% 0, transparent 0,transparent 14px, #e91e63 14px),
+            radial-gradient(circle at 0 100%, transparent 0,transparent 14px, #e91e63 14px);
+            background-repeat: no-repeat;
+            background-position: right bottom, left top, right top, left bottom;
+        }
+    }
+    .bs-btn-box{
+        width: 300px;
+        position: relative;
+        padding-left: 40px;
+        .bs-btn-hover{
+            width: 80px;
+            height: 40px;
+            border: 1px solid #666;
+            cursor: pointer;
+            transition: all .5s;
+            margin-bottom: 60px;
+            &:hover{
+                box-shadow: 0 0 0 50vmax rgba(0, 0, 0, .5);
+            }
+        }
+        .bs-h{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 32px;
+            height: 32px;
+            border: 1px solid #000;
+            margin-bottom: 20px;
+            &.left{
+                box-shadow: -7px 0 5px -5px #333;
+            }
+            &.right{
+                box-shadow: 7px 0 5px -5px #333;
+            }
+            &.top{
+                box-shadow: 0 -7px 5px -5px #333;
+            }
+            &.bottom{
+                box-shadow: 0 7px 5px -5px #333;
+            }
+        }
+    }
+
+    .bs-com{
+        position: relative;
+        margin-bottom: 30px;
+        &> div{
+            position: relative;
+            z-index:10;
+            height: 50px;
+            margin-right: 0;
+            border-radius: 14px;
+            box-shadow: 0 0 5px 2px hsl(48, 100%, 45%);
+            background: hsl(48, 100%, 50%);
+        }
+        &.g-left{
+            &::before{
+                content: "";
+                position: absolute;
+                top: 55%;
+                left: 3.5%;
+                right: 10%;
+                bottom: -7%;
+                border-radius: 10px;
+                background: hsl(48, 100%, 20%);
+                transform: translate(0, -15%) rotate(-4deg);
+                transform-origin: center center;
+                box-shadow: 0 0 15px 6px hsl(48, 100%, 20%);
+            }
+        }
+    }
+    .bs-shadow{
+        position: relative;
+        width: 250px;
+        height: 250px;
+        border: 1px solid #333;
+        box-sizing: border-box;
+        margin: 50px 0;
+        overflow: hidden;
+        &::before{
+            position: absolute;
+            top: -50px;
+            left: -50px;
+            width: 50px;
+            height: 50px;
+            box-shadow: 
+                50px 50px, 150px 50px, 250px 50px,
+                50px 100px,  150px 100px, 250px 100px,
+                50px 150px, 150px 150px, 250px  150px,
+                50px 200px, 150px 200px, 250px  200px,
+                50px 250px, 150px 250px, 250px  250px;
+            animation: move 3s infinite linear;
+            content: '';
+        }
+    }
+
+    .bs-gradient{
+        width: 250px;
+        height: 250px;
+        border: 1px solid #333;
+        box-sizing: border-box;
+        background-image: linear-gradient(90deg, #000 0%, #000 50%, #fff 50%, #fff 100%); // 这里分配根据size大小去分配的；也就是100px中50%是黑色，50%-100%为白色；
+        background-size: 100px 100px;
+    }
+
+}
+
+@keyframes shadowmove {
+    0%{
+        background: #e91e63; 
+        box-shadow: 0 0 0 0 #e91e63; 
+    }
+    
+    10% {
+        background: transparent; 
+        box-shadow: 0 0 0 0 #e91e63; 
+    }
+    
+    50% {
+        background: transparent; 
+        box-shadow: 0 0 0 300px #e91e63; 
+    }
+}
+
+@keyframes move {
+    25%{
+        transform: translate(50px);
+        color: coral;
+        box-shadow: 
+                50px 50px, 150px 50px, 250px 50px,
+                50px 100px,  150px 100px, 250px 100px,
+                50px 150px, 150px 150px, 250px  150px,
+                50px 200px, 150px 200px, 250px  200px,
+                50px 250px, 150px 250px, 250px  250px;
+    }
+    50%{
+        transform: translate(0px);
+        color: brown;
+        border-radius: 0;
+        box-shadow:
+            50px 50px, 150px 50px, 250px 50px,
+            100px 100px, 200px 100px, 300px 100px,
+            50px 150px, 150px 150px, 250px 150px,
+            100px 200px, 200px 200px, 300px 200px,
+            50px 250px, 150px 250px, 250px 250px;
+    }
+    75%{
+        transform: translate(0px);
+        color: teal;
+        border-radius: 50%;
+        box-shadow:
+            50px 50px, 150px 50px, 250px 50px,
+            100px 100px, 200px 100px, 300px 100px, // x轴偏移50px
+            50px 150px, 150px 150px, 250px 150px,
+            100px 200px, 200px 200px, 300px 200px,
+            50px 250px, 150px 250px, 250px 250px;
+
+    }
+    100%{
+        border-radius: 0;
+        box-shadow: 
+                50px 50px, 150px 50px, 250px 50px,
+                50px 100px,  150px 100px, 250px 100px,
+                50px 150px, 150px 150px, 250px  150px,
+                50px 200px, 150px 200px, 250px  200px,
+                50px 250px, 150px 250px, 250px  250px;
     }
 }

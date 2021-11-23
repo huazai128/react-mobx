@@ -29,6 +29,9 @@ export const asynchronousComponents = {
     BlendMode: loadComponent(() => import(/* webpackChunkName: "BlendMode" */ '@views/CSS/BlendMode/index')),
     ClipPath: loadComponent(() => import(/* webpackChunkName: "ClipPath" */ '@views/CSS/ClipPath')),
     BoxShadow: loadComponent(() => import(/* webpackChunkName: "BoxShadow" */ '@views/CSS/BoxShadow')),
+    TextShadow: loadComponent(() => import(/* webpackChunkName: "TextShadow" */ '@views/CSS/TextShadow')),
+    DropShadow: loadComponent(() => import(/* webpackChunkName: "DropShadow" */ '@views/CSS/DropShadow')),
+    Filter: loadComponent(() => import(/* webpackChunkName: "Filter" */ '@views/CSS/Filter')),
     MiteEditor: loadComponent(() => import(/* webpackChunkName: "MiteEditor" */ '@views/Canvas/MiteEditor/index')),
 }
 
@@ -261,6 +264,31 @@ export const menu: IMenu[] = [
         component: 'BoxShadow',
         exact: true
     },
+    {
+        id: 67,
+        pid: 6,
+        path: '/text-shadow',
+        title: 'text-shadow属性',
+        component: 'TextShadow',
+        exact: true
+    },
+    {
+        id: 68,
+        pid: 6,
+        path: '/drop-shadow',
+        title: 'drop-shadow属性',
+        component: 'DropShadow',
+        exact: true
+    },
+    {
+        id: 68,
+        pid: 6,
+        path: '/filter',
+        title: 'filter属性',
+        component: 'Filter',
+        exact: true
+    },
+
     {
         id: 9,
         path: '/users',
