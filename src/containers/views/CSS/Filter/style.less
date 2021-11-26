@@ -1,0 +1,201 @@
+
+.f-box{
+    display: block;
+    h4{
+        color:#333;
+        font-size: 16px;
+        margin-bottom: 50px;
+        span{
+            font-size: 12px;
+            font-weight: normal;
+            padding-right: 40px;
+        }
+    }
+    .f-com{
+        width: 300px;
+        &.f-filter-box{
+            background: #fff; // 必须加上这里的白色;才能把高斯模糊去掉；
+            filter: blur(4px) contrast(8);
+            width: 580px;
+            min-height: 200px;
+        }
+        .g-container{
+            width: 30px;
+            height: 30px;
+            position: relative;
+            
+        }
+        .for(@n, @i: 0) when (@i =< @n) { // less 渲染
+            .g-ball:nth-child(@{i}) {
+                animation: move 3.5s infinite (@i * 0.2 + 0.1s) linear;
+                padding: 10px;
+            }
+            .for(@n, (@i + 1));
+        }
+        .for(7);
+        .g-ball,
+        .g-first{
+            position: absolute;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            background: #24f6f0;
+            border-radius: 50%;
+            
+            transform: translate(-700%, 0);
+            opacity: 0;
+        }
+        .g-first{
+            animation: scaleMove 3.5s infinite linear;
+        }
+    }
+
+    .f-qiu{
+        width: 500px;
+        height: 500px;
+        position: relative;
+        .container{
+            width: 300px;
+            height: 300px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            background: #fff;
+            filter: contrast(20);
+            border-radius: 50%;
+            .bg{
+                width: 200px;
+                height: 200px;
+                background: #000;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%,-50%);
+                filter: contrast(20) blur(6px); // blur()加上才能融合， 如果想要两个物体融合必须两个物体上都存在blur属性
+                border-radius: 50%;
+            }
+            .f-qiu-box{
+                position: absolute;
+                top: 50%;
+                left: 80px;
+                transform: translate(-50%, -50%) rotate(0);
+                background-color: blue;
+                border-radius: 50%;
+                width: 100px;
+                height: 100px;
+                filter: unset;
+                filter: contrast(20) blur(6px);
+                animation: turn 5s linear infinite;
+                transform-origin: -100% center;
+            }
+        }
+    }
+
+    .f-path{
+        .btn-wrap{
+            margin: 0 auto 80px;
+            filter: drop-shadow(2px 4px 3px rgba(50, 50, 0, 0.5)); // 阴影效果; 必须在当前元素下的父元素中加入阴影这个box-shadow有区别的
+            .btn{
+                width: 220px;
+                height: 64px;
+                font-size: 24px;
+                color: #be9451;
+                background: linear-gradient(#f5e5bf, #fbe8c8, #f5e5bf);
+                clip-path: polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0 50%);
+            }
+        }
+        .f-shui{
+            width: 500px;
+            height: 256px;
+            background: #000;
+            filter: blur(3px) contrast(20); // 产生了融合
+            padding-top: 50px;
+            box-sizing: content-box;
+            .text{
+                width: 395px;
+                height: 104px;
+                text-align: center;
+                position: relative;
+                font-size: 80px;
+                color: #fff;
+                border-bottom: 10px solid #fff;
+                transform: skewY(6deg);
+                &::before,&::after{
+                    position: absolute;
+                    left: 0;
+                    bottom: -20px;
+                    width: 10px;
+                    height: 20px;
+                    border-radius: 50%;
+                    background: #fff;
+                    transform: translate(0, 0);
+                    animation: moveWater 7.5s ease-in-out infinite;
+                    content: '';
+                }
+                &::after{
+                    animation: moveWater 7.5s ease-in-out 1s infinite;
+                }
+            }
+        }
+    }
+}
+
+@keyframes scaleMove {
+    // 这是第一个球开始进场，位置为X轴-80px;
+    25%{
+        opacity: 1;
+        transform: translate(-1vw, 0);
+    }
+    35%{
+        opacity: 1;
+        transform: scale(1);
+    }
+    70%{
+        opacity: 1;
+        transform: translate(1vw, 0) scale(2);
+    }
+    90%,
+    100%{
+        opacity: 0;
+        transform: translate(1vw, 0) scale(1);
+    }
+}
+
+@keyframes move {
+    25% {
+        opacity: 1;
+        transform: translate(-1vw, 0);
+    }
+    50% {
+        opacity: 1;
+        transform: translate(1vw, 0);
+    }
+    75%,
+    100% {
+        opacity: 0;
+        transform: translate(700%, 0);
+    }
+}
+
+@keyframes turn {
+    100% {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+@keyframes moveWater {
+    80%{
+        bottom: -30px;
+        transform: translate(385px, 0);
+    }
+    93%{
+        transform: translate(385px, 3px);
+        opacity: 1;
+    }
+    100%{
+        transform: translate(385px, 150px);
+        opacity: 0;
+    }
+}

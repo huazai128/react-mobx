@@ -32,6 +32,7 @@ export const asynchronousComponents = {
     TextShadow: loadComponent(() => import(/* webpackChunkName: "TextShadow" */ '@views/CSS/TextShadow')),
     DropShadow: loadComponent(() => import(/* webpackChunkName: "DropShadow" */ '@views/CSS/DropShadow')),
     Filter: loadComponent(() => import(/* webpackChunkName: "Filter" */ '@views/CSS/Filter')),
+    Border: loadComponent(() => import(/* webpackChunkName: "Border" */ '@views/CSS/Border')),
     MiteEditor: loadComponent(() => import(/* webpackChunkName: "MiteEditor" */ '@views/Canvas/MiteEditor/index')),
 }
 
@@ -281,13 +282,22 @@ export const menu: IMenu[] = [
         exact: true
     },
     {
-        id: 68,
+        id: 69,
         pid: 6,
         path: '/filter',
         title: 'filter属性',
         component: 'Filter',
         exact: true
     },
+    {
+        id: 610,
+        pid: 6,
+        path: '/border',
+        title: 'border属性',
+        component: 'Border',
+        exact: true
+    },
+
 
     {
         id: 9,

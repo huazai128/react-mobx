@@ -16,6 +16,11 @@ const DropShadow: React.FC = () => {
                         <div></div>
                     </div>
                 </div>
+                <div className="ds-com-box">
+                    <div className="ds-drop-box flex-center">
+                        <div className="ds-flecha drop-shadow"></div>
+                    </div>
+                </div>
             </div>
         </div>
 

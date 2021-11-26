@@ -1,19 +1,21 @@
-.ds-box{
+.ds-box {
     display: block;
     background: linear-gradient(90deg, #fff, #bbb);
-    h4{
-        color:#fff;
+
+    h4 {
+        color: #fff;
         font-size: 16px;
         font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
         margin-bottom: 50px;
     }
 
-    .ds-com-box{
-        .ds-douyin{
+    .ds-com-box {
+        .ds-douyin {
             width: 400px;
             height: 450px;
             background: #000;
-            & > div{
+
+            &>div {
                 position: relative;
                 top: 60px;
                 width: 37px;
@@ -23,7 +25,8 @@
                 background: #fff;
                 filter: drop-shadow(-10px -10px 0 #24f6f0) contrast(150%) brightness(110%); // contrast：对比度  brightness：亮度
                 box-shadow: 11.6px 10px 0 0 #fe2d52;
-                &::before{
+
+                &::before {
                     position: absolute;
                     width: 100px;
                     height: 100px;
@@ -37,7 +40,8 @@
                     filter: drop-shadow(16.8px 0 0 #fe2d52);
                     content: '';
                 }
-                &::after{
+
+                &::after {
                     position: absolute;
                     width: 140px;
                     height: 140px;
@@ -53,6 +57,35 @@
                     filter: drop-shadow(14.8px 0 0 #fe2d52);
                     content: '';
                 }
+            }
+        }
+    }
+
+    .ds-drop-box {
+        width: 300px;
+        height: 300px;
+
+        .ds-flecha {
+            position: relative;
+            margin: 30px 0 0 50px;
+            width: 0;
+            height: 0;
+            border-top: 90px solid transparent;
+            border-right: 90px solid #FFC000;
+            transform: rotate(10deg);
+            filter: drop-shadow(0 0 10px rgba(0, 0, 0, .5));
+
+            &::after {
+                position: absolute;
+                top: -115px;
+                left: -89px;
+                width: 120px;
+                height: 120px;
+                border: 0 solid transparent;
+                border-top: 30px solid #FFC000;
+                transform: rotate(45deg);
+                border-radius: 200px 0 0 0;
+                content: '';
             }
         }
     }

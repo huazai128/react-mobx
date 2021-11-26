@@ -27,7 +27,6 @@ const BoxShadow: React.FC = () => {
                     <div className="bs-shadow"></div>
                     <div className="bs-gradient"></div>
                 </div>
-
             </div>
 
         </div >
