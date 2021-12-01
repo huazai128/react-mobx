@@ -33,6 +33,9 @@ export const asynchronousComponents = {
     DropShadow: loadComponent(() => import(/* webpackChunkName: "DropShadow" */ '@views/CSS/DropShadow')),
     Filter: loadComponent(() => import(/* webpackChunkName: "Filter" */ '@views/CSS/Filter')),
     Border: loadComponent(() => import(/* webpackChunkName: "Border" */ '@views/CSS/Border')),
+    Background: loadComponent(() => import(/* webpackChunkName: "Background" */ '@views/CSS/Background')),
+    Attachment: loadComponent(() => import(/* webpackChunkName: "Attachment" */ '@views/CSS//Background/attachment')),
+    Clip: loadComponent(() => import(/* webpackChunkName: "Clip" */ '@views/CSS//Background/clip')),
     MiteEditor: loadComponent(() => import(/* webpackChunkName: "MiteEditor" */ '@views/Canvas/MiteEditor/index')),
 }
 
@@ -295,6 +298,32 @@ export const menu: IMenu[] = [
         path: '/border',
         title: 'border属性',
         component: 'Border',
+        exact: true
+    },
+
+    {
+        id: 611,
+        pid: 6,
+        path: '/background',
+        title: 'background属性',
+        component: 'Background',
+        exact: true
+    },
+
+    {
+        id: 612,
+        pid: 6,
+        path: '/background-attachment',
+        title: 'background-attachment属性',
+        component: 'Attachment',
+        exact: true
+    },
+    {
+        id: 613,
+        pid: 6,
+        path: '/background-clip',
+        title: 'background-clip属性',
+        component: 'Clip',
         exact: true
     },
 

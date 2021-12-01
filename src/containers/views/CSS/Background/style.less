@@ -1,0 +1,135 @@
+@img: 'https://images.unsplash.com/photo-1440688807730-73e4e2169fb8?dpr=1&auto=format&fit=crop&w=1500&h=1001&q=80&cs=tinysrgb&crop=';
+
+.ba-box {
+    display: block;
+}
+
+.ba-fixed {
+    width: 400px;
+    height: 400px;
+    // 此处才是阴影重点
+    background: url(@img);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: top;
+    background-attachment: fixed;
+    overflow: hidden;
+
+    .ba-mo {
+        position: relative;
+        width: 220px;
+        height: 150px;
+        border-radius: 5px;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+
+        p {
+            position: relative;
+            z-index: 1;
+            color: #fff;
+            font-size: 16px;
+            font-weight: normal;
+            line-height: 1.5;
+            text-align: center;
+        }
+
+        &::after {
+            position: absolute;
+            background: url(@img) no-repeat top/cover;
+            background-attachment: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            filter: blur(2px);
+            content: '';
+        }
+    }
+}
+
+.box-table {
+    width: 450px;
+    margin: 0 40px;
+    box-sizing: border-box;
+
+    table {
+        position: relative;
+        width: 450px;
+        border: 1px solid #ccc;
+        text-align: center;
+
+        tbody {
+            border-collapse: separate;
+            height: 200px;
+        }
+
+        td,
+        th {
+            width: 150px;
+            padding: 5px;
+            border: 1px solid #ccc;
+        }
+    }
+
+    .ba-scroll {
+        top: -1px;
+        position: relative;
+        height: 200px;
+        overflow: hidden;
+        overflow-y: scroll;
+        background:
+            linear-gradient(#fff, transparent) top / 100% 100px,
+            radial-gradient(at 50% -15px, rgba(0, 0, 0, .8), transparent 70%) top / 100000% 12px;
+        background-repeat: no-repeat;
+        background-attachment: local, scroll; // 为background：由多个值时，设置的；
+    }
+}
+
+.bl-clip-text {
+    width: 100%;
+    height: 200px;
+    background-image: radial-gradient(ellipse farthest-side at 40% 0%, #455A64 0%, #263238 60%, #1a2327 100%);
+
+    p {
+        font-size: 5rem;
+        color: transparent;
+        word-spacing: 0.2rem;
+        background: #E8A95B;
+        background-clip: text; // 以文字内容区域进行裁剪
+        font-weight: bold;
+        position: relative;
+        white-space: nowrap;
+        line-height: 1;
+        display: inline-block;
+        margin: 0;
+
+        &::after {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 4;
+            // 绘制直线时，默认时从上往下绘制
+            background: linear-gradient(120deg,
+                    transparent 0%, transparent 6rem, white 11rem,
+                    transparent 11.5rem, transparent 15rem, rgba(255, 255, 255, 0.3) 20rem,
+                    transparent 25rem, transparent 27rem, rgba(255, 255, 255, 0.6) 32rem, white 33rem, rgba(255, 255, 255, 0.3) 33.15rem,
+                    transparent 38rem, transparent 40rem, rgba(255, 255, 255, 0.3) 45rem, transparent 50rem, transparent 100%);
+            background-clip: text;
+            background-size: 150% 100%;
+            background-repeat: no-repeat;
+            animation: shine 5s linear infinite;
+            content: attr(data-text);
+        }
+    }
+}
+
+@keyframes shine {
+    0% {
+        background-position: 50% 0;
+    }
+
+    100% {
+        background-position: -190% 0;
+    }
+}
