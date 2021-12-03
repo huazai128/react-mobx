@@ -4,6 +4,243 @@
     display: block;
 }
 
+.ba-conic-mo {
+    width: 200px;
+    height: 200px;
+    background: conic-gradient(deeppink, yellowgreen);
+}
+
+.ba-conic-biao {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: conic-gradient(red, orange, yellow, green, teal, blue, purple);
+}
+
+.ba-conic-pie {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: conic-gradient(deeppink 0, deeppink 30%, yellowgreen 30%, yellowgreen 70%, teal 70%, teal 100%);
+}
+
+// 雷达扫描
+.ba-conic-radar {
+    position: relative;
+    width: 240px;
+    height: 160px;
+    margin-top: 25px;
+    border-radius: 10px;
+    overflow: hidden;
+    z-index: 0;
+    padding: 10px;
+
+    &::after {
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        z-index: -1;
+        width: calc(100% - 10px);
+        height: calc(100% - 10px);
+        background: white;
+        border-radius: 5px;
+        animation: opacityChange 3s infinite alternate; // alternate	动画在奇数次（1、3、5...）正向播放，在偶数次（2、4、6...）反向播放
+        content: '';
+    }
+
+    &::before {
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: white;
+        z-index: -2;
+        background-repeat: no-repeat;
+        background-size: 50% 50%;
+        background-position: 0 0;
+        background-image: conic-gradient(#399953, #399953);
+        animation: animRotate 4s linear infinite;
+        content: '';
+    }
+
+    @keyframes animRotate {
+        100% {
+            transform: rotate(1turn);
+        }
+    }
+
+    @keyframes opacityChange {
+        50% {
+            opacity: 1;
+        }
+
+        100% {
+            opacity: .5;
+        }
+    }
+}
+
+.ba-conic-radar1 {
+    position: relative;
+    width: 240px;
+    height: 160px;
+    margin-top: 25px;
+    border-radius: 10px;
+    overflow: hidden;
+    z-index: 0;
+    padding: 10px;
+
+    &::after {
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        z-index: -1;
+        width: calc(100% - 10px);
+        height: calc(100% - 10px);
+        background: #000;
+        border-radius: 5px;
+        content: '';
+    }
+
+    &::before {
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        z-index: -2;
+        width: 200%;
+        height: 200%;
+        background-color: #1a232a;
+        background-position: 0 0;
+        background-repeat: no-repeat;
+        background-image: conic-gradient(transparent, rgba(168, 239, 255, 1), transparent 30%);
+        animation: animRotate1 4s linear infinite;
+        content: "";
+    }
+
+    @keyframes animRotate1 {
+        100% {
+            transform: rotate(1turn);
+        }
+    }
+}
+
+// 箭头
+.ba-linear-arrow {
+    margin: 20px 0;
+    width: 200px;
+    height: 40px;
+    background:
+        linear-gradient(-135deg, transparent 10%, #04e6fb 10%, #65ff9a 100%) top right,
+        linear-gradient(-45deg, transparent 10%, #04e6fb 10%, #65ff9a 100%) bottom right,
+        linear-gradient(-135deg, #04e6fb 0, #65ff9a 90%, transparent 90%) top left,
+        linear-gradient(-45deg, #04e6fb 0, #65ff9a 90%, transparent 90%) bottom left;
+    background-size: 90% 50%;
+    background-repeat: no-repeat;
+}
+
+// 双向箭头
+.ba-linear-arrow1 {
+    width: 200px;
+    height: 40px;
+    background:
+        linear-gradient(-135deg, transparent 10%, #04e6fb 10%, #65ff9a 100%) top right,
+        linear-gradient(-45deg, transparent 10%, #04e6fb 10%, #65ff9a 100%) bottom right,
+        linear-gradient(-45deg, #04e6fb 0, #65ff9a 90%, transparent 90%) top left,
+        linear-gradient(-135deg, #04e6fb 0, #65ff9a 90%, transparent 90%) bottom left;
+    background-size: 90% 50%;
+    background-repeat: no-repeat;
+}
+
+// 线性渐变线条
+.ba-linear-jian {
+    width: 250px;
+    height: 150px;
+    overflow: hidden;
+    border-radius: 4px;
+    position: relative;
+
+    &::before {
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background-size: 50% 50%, 50% 50%;
+        background-position: 0 0, 100% 0, 100% 100%, 0 100%;
+        background-repeat: no-repeat;
+        background-image: linear-gradient(#399953, #399953), linear-gradient(#fbb300, #fbb300), linear-gradient(#d53e33, #d53e33), linear-gradient(#377af5, #377af5);
+        z-index: 0;
+        animation: rotate 4s linear infinite;
+        content: '';
+    }
+
+    @keyframes rotate {
+        100% {
+            transform: rotate(1turn);
+        }
+    }
+
+    &::after {
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        height: calc(100% - 10px);
+        width: calc(100% - 10px);
+        z-index: 1;
+        background: #fff;
+        content: '';
+    }
+}
+
+// 内切角
+.ba-linear-notching {
+    width: 200px;
+    height: 120px;
+    background:
+        linear-gradient(135deg, transparent 15px, deeppink 0) top left,
+        linear-gradient(-135deg, transparent 15px, deeppink 0) top right,
+        linear-gradient(-45deg, transparent 15px, deeppink 0) bottom right,
+        linear-gradient(45deg, transparent 15px, deeppink 0) bottom left;
+    background-repeat: no-repeat;
+    background-size: 50% 50%; //
+}
+
+// 进度条
+.ba-linear-bar {
+    width: 250px;
+    height: 20px;
+    border-radius: 20px;
+    background: #ffba01;
+    position: relative;
+    overflow: hidden;
+
+    &::after {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 48px; // 这个高度是关键，才能无缝滚动
+        z-index: 1;
+        background: repeating-linear-gradient(45deg, #f06a0e, #f06a0e 10px, transparent 11px, transparent 19px, #f06a0e 20px);
+        background-position: 0 0;
+        background-repeat: no-repeat;
+        animation: posAnima 1s linear infinite;
+        content: '';
+    }
+
+    @keyframes posAnima {
+        from {
+            background-position: 0 0;
+        }
+
+        to {
+            background-position: 0 -28px;
+        }
+    }
+}
+
+
 .ba-fixed {
     width: 400px;
     height: 400px;
@@ -122,14 +359,14 @@
             content: attr(data-text);
         }
     }
-}
 
-@keyframes shine {
-    0% {
-        background-position: 50% 0;
-    }
+    @keyframes shine {
+        0% {
+            background-position: 50% 0;
+        }
 
-    100% {
-        background-position: -190% 0;
+        100% {
+            background-position: -190% 0;
+        }
     }
 }

@@ -23,6 +23,8 @@ export const asynchronousComponents = {
     Users: loadComponent(() => import(/* webpackChunkName: "users" */ '@views/Users')),
     Upload: loadComponent(() => import(/* webpackChunkName: "Upload" */ '@views/JS/Upload')),
     IndexDB: loadComponent(() => import(/* webpackChunkName: "IndexDB" */ '@views/JS/IndexDB')),
+    Socket: loadComponent(() => import(/* webpackChunkName: "Socket" */ '@views/JS/Socket')),
+
     Sticky: loadComponent(() => import(/* webpackChunkName: "Sticky" */ '@views/CSS/Sticky/index')),
     SendBox: loadComponent(() => import(/* webpackChunkName: "SendBox" */ '@views/CSS/SendBox/index')),
     Perspective: loadComponent(() => import(/* webpackChunkName: "Perspective" */ '@views/CSS/Perspective/index')),
@@ -215,6 +217,16 @@ export const menu: IMenu[] = [
         component: 'IndexDB',
         exact: true
     },
+    {
+        id: 53,
+        pid: 5,
+        path: '/socket',
+        title: 'socket',
+        icon: 'book',
+        component: 'Socket',
+        exact: true
+    },
+
     {
         id: 6,
         path: '/css',
