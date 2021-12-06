@@ -36,8 +36,11 @@ export const asynchronousComponents = {
     Filter: loadComponent(() => import(/* webpackChunkName: "Filter" */ '@views/CSS/Filter')),
     Border: loadComponent(() => import(/* webpackChunkName: "Border" */ '@views/CSS/Border')),
     Background: loadComponent(() => import(/* webpackChunkName: "Background" */ '@views/CSS/Background')),
-    Attachment: loadComponent(() => import(/* webpackChunkName: "Attachment" */ '@views/CSS//Background/attachment')),
-    Clip: loadComponent(() => import(/* webpackChunkName: "Clip" */ '@views/CSS//Background/clip')),
+    Attachment: loadComponent(() => import(/* webpackChunkName: "Attachment" */ '@views/CSS/Background/attachment')),
+    Clip: loadComponent(() => import(/* webpackChunkName: "Clip" */ '@views/CSS/Background/clip')),
+    Mask: loadComponent(() => import(/* webpackChunkName: "Mask" */ '@views/CSS/Mask')),
+
+
     MiteEditor: loadComponent(() => import(/* webpackChunkName: "MiteEditor" */ '@views/Canvas/MiteEditor/index')),
 }
 
@@ -336,6 +339,14 @@ export const menu: IMenu[] = [
         path: '/background-clip',
         title: 'background-clip属性',
         component: 'Clip',
+        exact: true
+    },
+    {
+        id: 614,
+        pid: 6,
+        path: '/mask-image',
+        title: 'mask-image属性',
+        component: 'Mask',
         exact: true
     },
 

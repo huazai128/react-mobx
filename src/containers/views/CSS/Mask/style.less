@@ -1,0 +1,52 @@
+@img2: 'http://up.enterdesk.com/edpic_source/21/00/00/210000f8e772d7fc0758e67ae4b48807.jpg';
+@img1: 'https://images.unsplash.com/photo-1440688807730-73e4e2169fb8?dpr=1&auto=format&fit=crop&w=1500&h=1001&q=80&cs=tinysrgb&crop=';
+@count: 360;
+
+
+.mi-box {
+    display: block;
+
+    .mi-com-box {}
+
+    .mi-slide-box {
+        width: 400px;
+        height: 250px;
+        position: relative;
+
+        &>div {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .a {
+            background: url(@img1);
+            background-size: 100% auto;
+        }
+
+        .b {
+            background: url(@img2);
+            background-size: 100% auto;
+            mask-image: linear-gradient(0, rgba(0, 0, 0, 1) 40%, transparent 60%);
+            mask-position: 50% 50%;
+            animation: moveRotate 10s linear infinite;
+        }
+
+        @keyframes moveRotate {
+            .keyItem(@n, @i: 0) when (@i =< @n) {
+                // 重新定义变量
+                @w: @i / @count * 100%;
+
+                @{w} {
+                    mask-image: linear-gradient(@i / @count * 360deg, rgba(0, 0, 0, 1) 40%, transparent 60%);
+                }
+
+                .keyItem(@n, (@i + 1));
+            }
+
+            .keyItem(@count);
+        }
+    }
+}

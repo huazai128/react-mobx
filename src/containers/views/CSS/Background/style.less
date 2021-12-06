@@ -370,3 +370,30 @@
         }
     }
 }
+
+.ba-underline-box {
+    width: 250px;
+    height: 120px;
+    border-radius: 6px;
+    background: #00aabb;
+    overflow: hidden;
+
+    h3 {
+        font-size: 24px;
+        color: #fff;
+        font-weight: normal;
+        text-shadow: 0.1em 0 #00aabb, -0.1em 0 #00aabb;
+        transition: 1s;
+        margin: 0;
+        background: linear-gradient(#fff, #fff) no-repeat;
+        background-size: 100% 1px;
+        background-position: -12.4rem 100%; // 这里x轴不能为百分比，设置偏移没有效果。
+        transition: all 0.6s linear;
+        padding: 3px 0;
+        cursor: pointer;
+
+        &:hover {
+            background-position: 0 100%;
+        }
+    }
+}
