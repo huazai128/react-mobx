@@ -10,6 +10,8 @@ const Background: React.FC = () => {
                 <br />
                 <span>linear-gradient: 线性渐变 </span>
                 <br />
+                <span>radial-gradient: 径向渐变 </span>
+                <br />
                 <span>repeating-linear-gradient: 重复线性渐变 </span>
 
             </h4>
@@ -30,6 +32,10 @@ const Background: React.FC = () => {
                     <div className="ba-underline-box flex-center">
                         <h3>.underline1-ajkpys</h3>
                     </div>
+                </div>
+                <div className="box-radial flex-center flex-col" style={{ marginLeft: '40px' }}>
+                    <div className="coupon-box flex-vcenter" data-coupon="领取">50</div>
+                    <div className="wave-box flex-vcenter">50</div>
                 </div>
             </div>
         </div>

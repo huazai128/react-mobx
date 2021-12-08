@@ -4,7 +4,7 @@ import './style.less'
 const BlendMode: React.FC = () => {
     return (
         <div className="bm-mode-boxs flex">
-            <div className="bm-mode-info">
+            <div className="bm-mode-info flex wrap" >
                 <p>mix-blend-mode 和background-blend-mode类似</p>
                 <p>mix-blend-mode: normal;          //正常</p>
                 <p>mix-blend-mode: multiply;        //正片叠底</p>
@@ -26,12 +26,18 @@ const BlendMode: React.FC = () => {
                 <p>mix-blend-mode: inherit;         //继承</p>
                 <p>mix-blend-mode: unset;           //复原</p>
             </div>
-            <div className="bm-mode-container">
-                <div className="bm-mode-video">
+            <div className="bm-mode-container flex wrap">
+                <div className="bm-mode-video ">
                     <video autoPlay muted loop poster="https://www.apple.com.cn/v/iphone-12/g/images/overview/camera/night_mode_01__dg8mk3qbqhci_large.jpg">
                         <source src="https://www.apple.com.cn/105/media/us/iphone-12/2020/7f5b7de7-9f8c-41eb-bf3b-f294773108e6/anim/video/large_2x.mp4" />
                     </video>
                     <p>PEPSI</p>
+                </div>
+                <div className="flex-g-1 pic-box flex wrap">
+                    <div className="pic"></div>
+                    <div className="pic pic1"></div>
+                    <div className="pic pic2"></div>
+                    <div className="pic pic3"></div>
                 </div>
                 <div className="bm-container-text">
                     <p>TEXT WAVE</p>
