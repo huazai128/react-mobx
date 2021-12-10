@@ -9,7 +9,7 @@ const STATICDOMAIN = APP_ENV === 'prod' ? '.' : ''
 
 module.exports = {
     // open http://localhost:devPort/
-    devPort: 5002,
+    devPort: 8080,
     // output html
     index: path.resolve(__dirname, `./../dist/${APP_ENV}/index.html`),
     assetsRoot: path.resolve(__dirname, `./../dist/${APP_ENV}`),

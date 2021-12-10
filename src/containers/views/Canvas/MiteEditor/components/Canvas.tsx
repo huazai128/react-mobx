@@ -7,7 +7,7 @@ import PubSub from 'pubsub-js'
 import useRootStore from '@store/useRootStore'
 import logo from '@assets/images/react.png'
 import msk from '@assets/images/msk.png'
-import { toJS } from 'mobx';
+
 
 const baseShapeConfig = {
     IText: {
@@ -53,7 +53,6 @@ const Canvas = () => {
         const canvas = new fabric.Canvas('canvas', {
             backgroundColor: '#fff'
         });
-
         const init = () => {
             // 初始化
             const img = document.createElement('img');
@@ -67,7 +66,7 @@ const Canvas = () => {
                 mouseUpHandler: deleteObject,
                 render: renderIcon,
                 cornerSize: 24
-            });
+            } as any);
             const shape = new fabric.IText(nanoid(8), {
                 text: 'Hello World',
                 width: 60,
@@ -78,12 +77,12 @@ const Canvas = () => {
             })
             canvas.add(shape)
             // 监听鼠标按下时删除制定属性后重启渲染
-            function deleteObject(eventData: any, transform: any) {
+            function deleteObject(eventData: any, transform: any, x, y) {
                 const target = transform.target;
                 const canvas = target.canvas;
                 canvas.remove(target);
                 canvas.requestRenderAll();
-                // return false
+                return false
             }
             // 渲染删除icon
             function renderIcon(ctx: any, left: number, top: number, styleOverride: any, fabricObject: any) {
@@ -143,7 +142,7 @@ const Canvas = () => {
                             oImg.scale(0.5).set({
                                 left: size[0] / 3,
                                 top: size[1] / 3,
-                            });;//图片缩小10倍
+                            });//图片缩小10倍
                             canvas.add(oImg);
                         });
                         break;
@@ -196,7 +195,6 @@ const Canvas = () => {
         PubSub.subscribe('saveTpl', (msg, data) => {
             // 获取数据
             const json = canvas.toDatalessJSON();
-            console.log(JSON.stringify(json), 'jsoon=========')
             const id = nanoid(8);
             const tpls = JSON.parse(localStorage.getItem('tpls') || "{}")
             tpls[id] = { json, t: data };

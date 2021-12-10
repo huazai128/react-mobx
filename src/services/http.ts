@@ -32,7 +32,7 @@ enum HTTPERROR {
 const TOKENERROR = [401, 402, 403]
 
 const DEFAULTCONFIG = {
-    baseURL: process.env.BASEURL
+    baseURL: process.env.BASEURL,
 }
 
 const http: HttpResquest = {}
@@ -47,7 +47,7 @@ const isSuccess = res => (res.code === 200 || res.code === 0)
 const resFormat = res => res.response || res.result || res || {}
 
 methods.forEach(v => {
-    http[v] = (url: string, data: object | FormData, otherConfig?: AxiosRequestConfig,baseUrl?: string) => {
+    http[v] = (url: string, data: object | FormData, otherConfig?: AxiosRequestConfig, baseUrl?: string) => {
         let axiosConfig: AxiosRequestConfig = {
             method: v,
             url,
@@ -100,7 +100,7 @@ methods.forEach(v => {
             axiosConfig.data = data
         }
         axiosConfig.startTime = new Date()
-        if(otherConfig) {
+        if (otherConfig) {
             axiosConfig = Object.assign(axiosConfig, otherConfig)
         }
         return instance

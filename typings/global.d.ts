@@ -29,6 +29,15 @@ declare interface Window {
     postMessage(message: any, targetOrigin?: string, transfer?: Transferable[]): void
 
     webkitIndexedDB: any
+
     mozIndexedDB: any
+
     msIndexedDB: any
+    // Wasm 挂在到Module下
+    Module: any;
+    // Wasm提供的文件系统
+    FS: any;
+    // Wasm提供的 IndexDB 
+    IDBFS: any;
+
 }

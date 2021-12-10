@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState, useCallback } from 'react'
 import { requestFrame } from '@utils/util'
 import * as styles from './style.scss'
 
-interface LinkProps {}
+interface LinkProps { }
 type Loop<T, R> = (diffTime: T) => R
 let thumbsInter: any = null
 
@@ -10,7 +10,7 @@ let thumbsInter: any = null
  * canvas点赞效果
  * @returns
  */
-const Link: React.FC<LinkProps> = ({  }: LinkProps) => {
+const Link: React.FC<LinkProps> = ({ }: LinkProps) => {
     const canvasNode = useRef<HTMLCanvasElement>(null)
     const [cavasAni, setCavasAni] = useState<SendLove>(null)
     // 默认结尾值为0
@@ -44,7 +44,7 @@ const Link: React.FC<LinkProps> = ({  }: LinkProps) => {
         }
         thumbsUp(10)
     }, [cavasAni, praiseLast, newWorker])
-    
+
     // 处理大量数据绘制重叠问题
     const thumbsUp = (num: number) => {
         // 添加的数据数据小于阈值 则返回
@@ -98,7 +98,7 @@ interface RenderModel {
  * @class SendLove
  */
 class SendLove {
-    private ctx: CanvasRenderingContext2D 
+    private ctx: CanvasRenderingContext2D
     private width: number                        // 宽
     private height: number                       // 高
     private listImage: Array<CanvasImageSource>  // 图片集合

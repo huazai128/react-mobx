@@ -27,4 +27,6 @@ export { default as maxUploadStore } from './maxUploadStore'
 
 export { default as canvasStore } from './canvasStore'
 
+export { default as wasmStore } from './wasmStore'
+
 

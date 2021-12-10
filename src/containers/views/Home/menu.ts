@@ -14,9 +14,12 @@ export const asynchronousComponents = {
     Tags: loadComponent(() => import(/* webpackChunkName: "tags" */ '@views/Tags')),
     Article: loadComponent(() => import(/* webpackChunkName: "article" */ '@views/Article')),
     EditArticle: loadComponent(() => import(/* webpackChunkName: "addArticle" */ '@views/EditArticle')),
+
     Like: loadComponent(() => import(/* webpackChunkName: "like" */ '@views/Canvas/Like')),
     Card: loadComponent(() => import(/* webpackChunkName: "card" */ '@views/Canvas/Card')),
     Map: loadComponent(() => import(/* webpackChunkName: "card" */ '@views/Canvas/Map')),
+    WasmCanvas: loadComponent(() => import(/* webpackChunkName: "WasmCanvas" */ '@views/Canvas/WasmCanvas')),
+
     Rtmp: loadComponent(() => import(/* webpackChunkName: "rtmp" */ '@views/LiveVideo/Rtmp')),
     Broadway: loadComponent(() => import(/* webpackChunkName: "broadway" */ '@views/LiveVideo/Broadway')),
     Yuv: loadComponent(() => import(/* webpackChunkName: "broadway" */ '@views/LiveVideo/Yuv')),
@@ -160,6 +163,16 @@ export const menu: IMenu[] = [
         component: 'MiteEditor',
         exact: true
     },
+    {
+        pid: 3,
+        id: 34,
+        path: '/wasm-canvas',
+        title: 'wasm-canvas画卡',
+        icon: 'book',
+        component: 'WasmCanvas',
+        exact: true
+    },
+
     {
         id: 4,
         path: '/live',

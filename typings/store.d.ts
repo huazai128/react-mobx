@@ -33,6 +33,7 @@ declare global {
         maxUploadStore: IMaxUploadStore.MaxUploadStore
         cardStore: ICardStore.CardStore
         canvasStore: ICanvasStore.CanvasStore
+        wasmStore: IWasmStore.WasmStore
         routerStore: RouterStore
     }
 }
