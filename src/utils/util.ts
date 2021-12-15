@@ -97,3 +97,15 @@ export function download(url: string, filename: string, cb?: Function) {
         cb && cb()
     }))
 }
+
+/**
+ * hex转rgb数组
+ * @param hex 
+ * @returns 
+ */
+export const hexToRgba = (hex: string) => {
+    const r = parseInt(`0x${hex.slice(1, 3)}`) / 255;
+    const g = parseInt(`0x${hex.slice(3, 5)}`) / 255;
+    const b = parseInt(`0x${hex.slice(5, 7)}`) / 255;
+    return [r, g, b, 1.0];
+};

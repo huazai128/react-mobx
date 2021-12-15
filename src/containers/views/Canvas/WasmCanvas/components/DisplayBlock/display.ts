@@ -1,6 +1,7 @@
 import JSZip from 'jszip';
 import axios from 'axios';
 import PubSub from 'pubsub-js'
+import { toJS } from 'mobx';
 
 interface UitlsProps {
     nativeTimelineLoadConfig: (file: string, path: string) => boolean;
@@ -17,22 +18,25 @@ interface UitlsProps {
     nativeTimelineGetObjectType: (object: number) => number;
     nativeClipUpdateResource: (clip: number, path: string) => number;
     nativeInit: (width: number, height: number) => boolean;
+    nativeResize: (width: number, height: number) => void;
     nativeReset: () => void;
     nativePlay: () => void;
+    nativeSetLogCallback: (callback: number) => void;
+    nativeSetMessageCallback: (callback: number) => void;
 }
 
 export class Display {
-    private uitls: UitlsProps
-    private canvas: HTMLCanvasElement
+    private uitls?: UitlsProps
     private isWasmLoaded: boolean = false
-    private dirName: string
-    private sourceUrl: string
+    private dirName: string = ''
+    private sourceUrl: string = ''
     private isZipLoaded: boolean = false
     private effectData: any
+    private twoDData?: ArrayBuffer
     constructor(canvas: HTMLCanvasElement) {
-        this.canvas = canvas;
+        console.log('=====重新进入')
         window.Module = {
-            canvas: canvas,
+            canvas: canvas, // 传递canvas过去，实现webgl绘制
             onRuntimeInitialized: () => {
                 this.isWasmLoaded = true
                 const { FS, IDBFS } = window
@@ -72,7 +76,7 @@ export class Display {
                         const { Module } = window;
                         window.Module = {
                             ...Module,
-                            wasmBinary: new Uint8Array(res),
+                            wasmBinary: new Uint8Array(res), //  获取公共内存区域
                         }
                         return 1
                     });
@@ -146,13 +150,18 @@ export class Display {
             nativePlay: Module.cwrap('nativePlay', null, null),
             nativeInit: Module.cwrap('nativeInit', "bool", ['number', 'number']),
             nativeReset: Module.cwrap("nativeReset", null, null),
+            nativeResize: Module.cwrap('nativeResize', null, ['number', 'number']),
             nativeTimelineFindObjectByName: Module.cwrap('nativeTimelineFindObjectByName', "number", ["string"]),
             nativeTimelineGetObjectType: Module.cwrap("nativeTimelineGetObjectType", "number", ["number"]),
-            nativeClipUpdateResource: Module.cwrap("nativeClipUpdateResource", null, ["number", "string"])
+            nativeClipUpdateResource: Module.cwrap("nativeClipUpdateResource", null, ["number", "string"]),
+            nativeSetLogCallback: Module.cwrap("nativeSetLogCallback", null, ["number"]),
+            nativeSetMessageCallback: Module.cwrap("nativeSetMessageCallback", null, ["number"])
         };
         Module["doNotCaptureKeyboard"] = true;
         try {
+            // 初始化设置背景色
             this.uitls.nativeSetBackgroundColor(1.0, 1.0, 1.0, 1.0);
+            // 设置canvas的大小
             this.uitls?.nativeInit(1200, 1200);
         } catch (error) {
             console.log(error, 'error')
@@ -160,7 +169,7 @@ export class Display {
     }
 
     /**
-     * 加载资源
+     * 加载VOO 3D编辑器资源
      * @param {string} lowUrl
      * @param {string} [sourceUrl]
      * @memberof Display
@@ -170,7 +179,8 @@ export class Display {
         const arr = lowUrl.split('/');
         const path = arr[arr.length - 1].split('.')[0];
         this.dirName = `/data/${path}` || '/data/cloth';
-        this.sourceUrl = sourceUrl || '';
+        this.sourceUrl = sourceUrl || ''; // 2d 资源信息
+        this.load2DSource(); // 加载2d 资源
         try {
             const res = await this.loadZipRequst(lowUrl)
             this.effectData = new Uint8Array(res.data);
@@ -183,7 +193,7 @@ export class Display {
     }
 
     /**
-     * 获取资源加载；写入C/C++
+     * 获取VOO资源写入C/C++
      * @private
      * @memberof Display
      */
@@ -194,18 +204,18 @@ export class Display {
             // C/C++中写入文件
             FS.writeFile(`${this.dirName}.zip`, this.effectData);
             console.log(this.dirName)
-            this.uitls?.nativeUnzip(`${this.dirName}.zip`, this.dirName);
             // 调用syncfs异步函数。判断是否成功
             FS.syncfs((err: Error) => {
                 console.log("syncfs success?" + (!err ? "YES" : "NO"));
-                // 调用C/C++ 方法
+                this.uitls?.nativeUnzip(`${this.dirName}.zip`, this.dirName);
+                // 调用C/C++ 方法; // 加载timeline.sky文件
                 this.uitls?.nativeTimelineLoadConfig(
                     `${this.dirName}/timeline.sky`,
                     this.dirName
                 );
                 this.uitls?.nativePlay();
                 console.timeEnd('###openLowEffect');
-                PubSub.publish('laoded', true)
+                PubSub.publish('loaded', '3D')
             });
         }
     }
@@ -225,6 +235,7 @@ export class Display {
         console.log("clip = " + clip);
         const effect = this.uitls?.nativeTimelineGetEffectAt(clip, e) || 0;
         console.log("effect = " + effect);
+        // 修改当前effect 下的ofParam数据
         this.uitls?.nativeTimelineUpdateParam(
             effect,
             JSON.stringify({ ofParam: param })
@@ -241,19 +252,23 @@ export class Display {
      * @memberof Display
      */
     updateWasm(data: Uint8Array, width: number, height: number, settingInfo: any, target?: any) {
-        console.log(settingInfo, 'settingInfo=================')
         if (settingInfo) {
             let effect = 0;
             if (target) {
+                // 获取.sky文件 trackList下标数据
                 const track = this.uitls?.nativeTimelineGetTrackAt(target.trackIndex) || 0;
+                // 获取.sky文件trackList下标下的clipList下的下标数据
                 const clip = this.uitls?.nativeTimelineGetClipAt(track, target.clipIndex) || 0;
+                // 获取 effects数组下的某个下标数据
                 effect = this.uitls?.nativeTimelineGetEffectAt(clip, target.effectIndex) || 0;
             }
             const { paramSettingInfo } = settingInfo;
             if (settingInfo.binary == undefined) {
+                // 分配一块内存
                 const ptr = window.Module._malloc(data.byteLength);
                 settingInfo["binaryPtr"] = ptr;
             }
+
             settingInfo["binary"] = this.updateWASMHeap(settingInfo["binaryPtr"], data);
             paramSettingInfo.forEach((it: {
                 paramType: string; filterIndex: string; paramName: string; objName: string
@@ -268,6 +283,7 @@ export class Display {
                         break;
                     case "randomNum":
                         const r = Math.floor(Math.random() * 99999);
+                        // 修改ofParam 数据
                         this.uitls?.nativeTimelineUpdateParam(effect, JSON.stringify({ ofParam: { [`${it.filterIndex + ":" + it.paramName}`]: r } }));
                         break;
                 }
@@ -275,9 +291,109 @@ export class Display {
         }
     }
 
+    /**
+     *  针对其他类型的数据，处理成Uint8Array的数据，传递给C/C++
+     * @param {*} ptr
+     * @param {Uint8Array} data
+     * @return {*} 
+     * @memberof Display
+     */
     updateWASMHeap(ptr: any, data: Uint8Array) {
         const heapBytes = new Uint8Array(window.Module.HEAPU8.buffer, ptr, data.byteLength);
         heapBytes.set(new Uint8Array(data.buffer));
         return heapBytes;
+    }
+
+
+    /**
+     * 加载2d 资源信息
+     * @memberof Display
+     */
+    async load2DSource() {
+        if (!this.sourceUrl) return false
+        console.time("==============load2DSource==============")
+        const res = await this.loadZipRequst(this.sourceUrl);
+        const arr = new Uint8Array(res.data);
+        this.twoDData = arr
+        console.timeEnd("==============load2DSource==============")
+    }
+
+
+    /**
+     * 2D 模型渲染
+     * @memberof Display
+     */
+    open2DEffect() {
+        const { FS } = window;
+        if (this.isZipLoaded && this.isWasmLoaded && this.twoDData) {
+            console.timeEnd('###openHighEffect');
+            FS?.writeFile(`${this.dirName}.zip`, this.twoDData);
+            FS?.syncfs((err: Error) => {
+                console.log("syncfs success?" + +(!err ? "YES" : "NO"));
+                this.uitls?.nativeUnzip(`${this.dirName}.zip`, this.dirName);
+                this.uitls?.nativeTimelineLoadConfig(
+                    `${this.dirName}/timeline.sky`,
+                    this.dirName
+                );
+                this.uitls?.nativePlay();
+                console.log('###openHighEffect')
+                console.timeEnd('###openHighEffect');
+                performance.mark('openHighEffectEnd');
+                PubSub.publish('loaded', '2D')
+            });
+        }
+    }
+
+    /**
+     * 切换2d样板
+     * @param {number} seekNumber
+     * @memberof Display
+     */
+    nativeSeek(seekNumber: number) {
+        this.uitls?.nativeSeek(seekNumber);
+    }
+
+
+    /**
+     * 加载图片资源转换成 Blob，添加到FileReader中
+     * @param {string} filepath
+     * @param {(url: string) => void} callback
+     * @return {*} 
+     * @memberof Display
+     */
+    loadFile(filepath: string, callback: (url: string) => void) {
+        const data = window.FS.readFile(`${this.dirName}/${filepath}`, { encoding: "binary" });
+        const blob = new Blob([data]);
+        const fr = new FileReader();
+        fr.onload = (e: any) => {
+            console.log("loadFile success ? ");
+            callback(e.target.result);
+        };
+        fr.readAsDataURL(blob);
+    }
+
+    /**
+     * 修改背景颜色
+     * @param {Record<any, any>} colors
+     * @param {Record<string, any>} target
+     * @memberof Display
+     */
+    updateModelColor(colors: Record<any, any>, target: Record<string, any>) {
+        const { trackIndex = 1, clipIndex = 0, effectIndex = 0 } = target;
+        this.updateRender(trackIndex, clipIndex, effectIndex, colors);
+    }
+
+    /**
+     * 清除
+     * @memberof Display
+     */
+    clearData() {
+        const { FS } = window;
+        delete this.effectData;
+        FS.unmount("/data"); // 卸载
+        FS.rmdir("/data"); // 删除
+        // this.uitls?.nativeReset();
+        this.isWasmLoaded = false;
+        this.isZipLoaded = false
     }
 }

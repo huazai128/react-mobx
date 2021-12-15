@@ -15,8 +15,64 @@
         -webkit-transform: translate(-50%, 0);
 
         canvas {
+            position: absolute;
             width: 100%;
             height: 100%;
+            top: 0;
+            left: 0;
+        }
+
+        &.display-model {
+            width: 100%;
+            height: 0;
+            padding-bottom: 100%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            /* 50%为自身尺寸的一半 */
+            -webkit-transform: translate(-50%, -50%);
+
+            .loading-block {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                background-color: #fff;
+                z-index: 99999;
+                top: 0;
+                left: 0;
+                text-align: center;
+                line-height: 390px;
+            }
+
+            &.show-slider {
+                top: calc(50% - 50px);
+            }
+        }
+    }
+
+    .tab-container {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translate(-50%, 0);
+        /* 50%为自身尺寸的一半 */
+        -webkit-transform: translate(-50%, 0);
+
+        height: 100px;
+        padding: 32px 0;
+        margin: 0 auto;
+        width: fit-content;
+
+        display: flex;
+        justify-content: space-between;
+
+        &.disabled {
+            visibility: hidden;
+        }
+
+        .tab-btn {
+            width: 112px;
+            text-align: center;
         }
     }
 }
