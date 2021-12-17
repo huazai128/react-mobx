@@ -2,9 +2,9 @@
   "editor.formatOnSave": true,
   "eslint.validate": [
     {
-      "language": "javascript",
-      "autoFix": true
-    },
+		"language": "javascript",
+		"autoFix": true
+	},
     {
       "language": "typescript",
       "autoFix": true

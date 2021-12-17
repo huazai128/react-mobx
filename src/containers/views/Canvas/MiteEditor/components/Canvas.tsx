@@ -216,6 +216,7 @@ const Canvas = () => {
             // 渲染数据
             canvas.loadFromJSON(data, canvas.renderAll.bind(canvas))
         })
+        // 保存成svg 
         PubSub.subscribe('saveSvg', () => {
             const svg = canvas.toSVG();
             const blob = new Blob([svg], { type: "image/svg+xml" });

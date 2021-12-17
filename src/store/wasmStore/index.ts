@@ -3,7 +3,11 @@ import { StoreExt } from '@utils/reactExt'
 import autobind from 'autobind-decorator'
 import { pList, tempObj } from './data'
 
-
+interface MakeMap {
+    data: Uint8ClampedArray,
+    width: number
+    height: number
+}
 @autobind
 export class WasmStore extends StoreExt {
 
@@ -19,6 +23,9 @@ export class WasmStore extends StoreExt {
     // 当前信息
     @observable tmpInfo: any = tempObj
 
+    // 用来存储怡绘制的数据
+    @observable makeMap: Map<string, MakeMap> = new Map();
+
     // 当前设计器场景详情
     @computed
     get curDisignInfo() {
@@ -26,13 +33,24 @@ export class WasmStore extends StoreExt {
     }
 
     /**
-     * 切换衣服场景
+     * 切换裁片场景
      * @param {string} id
      * @memberof WasmStore
      */
     @action
     tabChangeHandle(id: string) {
         this.curDisignId = id;
+    }
+
+    /**
+     * 获取制作完成的裁片
+     * @param {string} id
+     * @param {ImageData} data
+     * @memberof WasmStore
+     */
+    @action
+    handleTmpChange(id: string, data: MakeMap) {
+        this.makeMap.set(id, data)
     }
 }
 

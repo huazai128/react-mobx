@@ -11,6 +11,7 @@ const IndexDB: React.FC<IProps> = ({ }: IProps) => {
         db.dbOpen({
             isDebug: true,
             version: 1,
+            dbName: 'dto',
             objectStores: [ // 建库依据
                 {
                     objectStoreName: 'blog',

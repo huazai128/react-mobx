@@ -20,7 +20,7 @@ export function requestFrame(cb: FrameRequestCallback & number) {
  * @param {string} url
  * @return {*} 
  */
-export function loadImg(url: string) {
+export function loadImg(url: string): Promise<any> {
     return new Promise((resolve, reject) => {
         const img = new Image();
         img.onload = () => {
@@ -109,3 +109,23 @@ export const hexToRgba = (hex: string) => {
     const b = parseInt(`0x${hex.slice(5, 7)}`) / 255;
     return [r, g, b, 1.0];
 };
+
+
+/**
+* 把图片转成ImageData
+* @param {string} src
+* @return {*} 
+*/
+export const loadImage = (src: string) => {
+    return new Promise<ImageData>(async (resolve, reject) => {
+        const img = await loadImg(src)
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+        const imgData = ctx.getImageData(0, 0, img.width, img.height);
+        canvas.remove();
+        resolve(imgData)
+    })
+}

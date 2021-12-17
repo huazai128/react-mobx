@@ -3,12 +3,29 @@ import { Display } from './display'
 import PubSub from 'pubsub-js'
 import useRootStore from '@store/useRootStore'
 import { Radio } from 'antd'
+import { hexToRgba, requestFrame, loadImage } from '@utils/util'
+import TWEEN from '@tweenjs/tween.js'; // 动画
+import WebFont from "webfontloader"; // 字体加载
 import './display.less'
+import { observer } from 'mobx-react'
 import { toJS } from 'mobx'
-import { hexToRgba } from '@utils/util'
-
 
 type DisplayType = '3D' | '2D'
+interface DownModel {
+    isDg: boolean
+    offsetX: number
+    offsetY: number
+    startX: number
+    startY: number
+}
+
+const defaultConfig: DownModel = {
+    isDg: false,
+    offsetX: 0,
+    offsetY: 0,
+    startX: 0,
+    startY: 0
+}
 
 const zipFile = 'https://cdn-cn.printailor.com/websiteStatic/wasm/20211214/wasm_202112141854_2.zip'
 const lowUrl = 'https://static-cn.printailor.com/sky/20211206/91ae9cc93e2501c859723d8ddcdcd5df.zip', sourceUrl = ' https://static-cn.printailor.com/sky/20211206/ee33c1c6a141e4412e453c699f8267a5.zip';
@@ -16,64 +33,104 @@ const tmpJS = 'http://biu-cn.dwstatic.com/seas/20211213/64f1d3016854efda3f6a9421
 const tmpWams = 'http://biu-cn.dwstatic.com/seas/20211213/cee729da954edd79031107a1b89d1c5d.wasm'
 
 let isOnce = true
+let stemp = 1;
+let minSize = 0.2;
+let maxSize = 5;
 
-const DisplayCanvas: React.FC = () => {
+const DisplayCanvas: React.FC = observer(() => {
     const displayRef = useRef<Display>()
     const previewRef = useRef<Record<string, any>>(); // 存储2/3D数据
     const canvasRef = useRef<HTMLCanvasElement>()
+    const tergetRef = useRef<Record<string, any>>() // 存储当前操作对象信息
+    const boxRef = useRef<HTMLDivElement>()
+    const downRef = useRef<DownModel>(defaultConfig)
     const [displayRadio, setDisplayRadio] = useState<DisplayType>('3D')
-    const [is2d, setIs2d] = useState<boolean>(false) // 当前是否只有2d模式s
+    const [is2d, setIs2d] = useState<boolean>(false) // 当前是否只有2d模式
+    const [isLoading, setIsLoading] = useState<boolean>(false)
     const [mockupList, setMockUpList] = useState<Record<string, any>[]>([]); // 存储2d数据
     const [targetSet, setTargetSet] = useState<Record<string, any>>() // 当前
-    const { curDisignInfo, tmpInfo, bgColor, pList } = useRootStore().wasmStore
+    const { curDisignInfo, tmpInfo, bgColor, pList, curDisignId, makeMap } = useRootStore().wasmStore
 
     // 初始化
     useEffect(() => {
-        console.time('========================allLoad')
         const display = new Display(canvasRef.current);
+        initDesigner();
         // 加载wasm 相关信息
         display.loadZip(zipFile);
         const init = () => {
-            initDesigner();
             display.loadResource(lowUrl, sourceUrl);
             displayRef.current = display
             PubSub.subscribe("loaded", (e, data) => {
+                setIsLoading(true)
                 // 2D 资源渲染
                 if (Object.is(data, '2D')) {
-                    console.log('2d======')
                     // 加载2D图片资源
                     loadTwoDRender();
                 } else {
-                    display.updateRender(1, 0, 0, { "0:Scale": 0.5 })
+                    const div = document.getElementById("main-container");
+                    let multiple = 450 / (div?.offsetHeight || 450);
+                    stemp = multiple; // 当前缩放值
+                    minSize = 0.2 * multiple; //重新设置最大值和最小值。
+                    maxSize = 5 * multiple;
+                    display.updateRender(1, 0, 0, { "0:Scale": multiple }) // 渲染
                     updateWasm();
                 }
             })
+            PubSub.subscribe('renderWasm', async (msg, data) => {
+                const imageData = await loadImage(data)
+                updateWasm(imageData)
+            })
         }
+        // 监听鼠标滚动事件
+        boxRef.current.addEventListener('mousewheel', mousewheel);
         init();
         return () => {
             displayRef.current.clearData();
-            // displayRef.current = null
-            // previewRef.current = null
-            // canvasRef.current = null
+            boxRef.current.removeEventListener('mousewheel', mousewheel);
+            displayRef.current = null
+            previewRef.current = null
+            canvasRef.current = null
         }
     }, [])
 
-
     // 监听displayRadio的变化
     useEffect(() => {
+        // 这里处理有问题
         if (Object.is(displayRadio, '2D') && isOnce) {
             displayRef.current?.open2DEffect();
             isOnce = false
         }
     }, [displayRadio])
 
-    //  监听targetSet变化，触发重新渲染
+    //  监听targetSet变化，触发重新渲染, 这里包含了已绘制的数据
     useEffect(() => {
+        // 加载完成才能渲染
         if (targetSet) {
-            renderColor(targetSet)
-            renderAllPic(targetSet)
+            setTimeout(() => {
+                // 渲染背景
+                renderColor()
+                // 渲染已经绘制的裁片
+                renderAllPic()
+            }, 10)
         }
     }, [targetSet]);
+
+
+    // 监听切片切换,旋转裁片
+    useEffect(() => {
+        // 监听不同位置的下绘制，是改变Y轴
+        if (curDisignId) {
+            const { updateParam = {} } = curDisignInfo;
+            if (!(updateParam instanceof Array)) {
+                const { value = '' } = updateParam;
+                // 选择背景旋转角度
+                updateModelParam({ "0:ModelRotY": value, "0:ModelRotX": 0 });
+                downRef.current = { ...downRef.current, offsetX: Number(value), offsetY: 0 }
+            }
+            renderAllPic()
+        }
+        // 渲染已经绘制的
+    }, [curDisignId])
 
     // 初始化设计器， 解析数据判断渲染模式
     const initDesigner = () => {
@@ -92,27 +149,27 @@ const DisplayCanvas: React.FC = () => {
             preview?.find((item: any) => item.type === "2D")?.setting || [];
         // 判断是否存在3D 数据
         const modelList = preview?.find((item: any) => item.type === "3D")?.setting || [];
+        let setObj = modelList[0]
         if (!modelList.length) {
             console.log('开启2d设置模式')
             setIs2d(true)
             setDisplayRadio('2D')
+            setObj = mockList[0]
         }
+        setTargetSet(toJS(setObj)); // 这里是为了切换是监听用， 后面可以能要优化这里
+        tergetRef.current = toJS(setObj) // 这里是为了获取
         setMockUpList(mockList);
     }
 
-    // 渲染3D 模型
-    const updateWasm = () => {
+    // 渲染3D 模型, 这里值渲染当前操作的裁片
+    const updateWasm = (imageData?: ImageData) => {
         const { settingInfo } = curDisignInfo
         const canvas = document.querySelector('#styleCanvas') as HTMLCanvasElement
-        const img = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height);
-        const data = new Uint8Array(img.data)
-        displayRef.current.updateWasm(data, canvas.width, canvas.height, settingInfo, {
-            clipIndex: 0,
-            effectIndex: 0,
-            icon: "",
-            seek: 0.8,
-            trackIndex: 1
-        })
+        if (!imageData) {
+            imageData = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height);
+        }
+        const data = new Uint8Array(imageData.data)
+        displayRef.current.updateWasm(data, canvas.width, canvas.height, settingInfo, tergetRef.current)
     }
 
     // 渲染2d 模型
@@ -162,7 +219,7 @@ const DisplayCanvas: React.FC = () => {
     }
 
     // 切换渲染模式。（3D/2D）
-    const radioHandle = (e) => {
+    const radioHandle = useCallback((e) => {
         const setting = previewRef.current?.find(
             (item: any) => item.type === e.target.value
         )?.setting;
@@ -170,17 +227,18 @@ const DisplayCanvas: React.FC = () => {
             onSeekClick(setting[0]);
         }
         setDisplayRadio(e.target.value)
-    }
+    }, [])
 
     // 点击切换封面
     const onSeekClick = useCallback((setting: Record<string, any>) => {
         if (setting) displayRef.current?.nativeSeek(setting.seek);
         setTargetSet(setting);
+        tergetRef.current = setting
     }, []);
 
 
     // 修改背景色
-    const renderColor = (target: Record<string, any>) => {
+    const renderColor = () => {
         const { extObj: { inputList = [] } = {} } = tmpInfo || {};
         // 当前切片的输入id
         let colorConfigs = inputList.find(
@@ -214,38 +272,122 @@ const DisplayCanvas: React.FC = () => {
                 }, {} as Record<any, any>);
                 if (colorObj && targetSet) {
                     colorObj[modelPathName] = rgbName;
-                    displayRef.current?.updateModelColor(colorObj, target || targetSet);
-                    // changeAllSetting = false;
+                    displayRef.current?.updateModelColor(colorObj, tergetRef.current);
                 }
             }
         }
     }
 
-
-    // 渲染已绘制的数据
-    const renderAllPic = (target?: Record<string, any>) => {
-        pList.forEach((item) => {
-            const { settingInfo } = item;
-            const canvas = document.querySelector('#styleCanvas') as HTMLCanvasElement
-            const img = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height);
-            const data = new Uint8Array(img.data)
+    // 渲染已绘制的数据 这个包含已绘制的数据
+    const renderAllPic = () => {
+        // 循环已经绘制的区域数据
+        for (let [key, value] of makeMap) {
+            const obj = pList.find((item) => item.id == key);
+            const data = new Uint8Array(value.data);
+            console.log(data, 'data', tergetRef.current)
             displayRef.current?.updateWasm(
                 data,
-                canvas.width,
-                canvas.height,
-                settingInfo,
-                target,
+                value.width,
+                value.height,
+                obj.settingInfo,
+                tergetRef.current
             );
-            displayRef.current?.updateRender(1, 0, 0, { "0:Scale": 0.5 })
-        });
+        }
+        displayRef.current?.updateRender(1, 0, 0, { "0:Scale": 0.5 })
     }
+
+    // 鼠标按下
+    const mouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+        const { clientX, clientY } = e
+        const { offsetY, offsetX } = downRef.current
+        downRef.current = {
+            ...downRef.current,
+            isDg: true,
+            startX: clientX - offsetX, // 记录当前位置
+            startY: clientY - offsetY,
+        }
+    }
+
+    // 鼠标滑动
+    const mouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+        const { clientX, clientY } = e
+        const { isDg, startX, startY } = downRef.current
+        if (isDg) {
+            let x = clientX - startX // 滑动位置减去按下时的位置
+            let y = clientY - startY
+            // 3D 才有旋转
+            updateModelParam({ "0:ModelRotY": x, "0:ModelRotX": -y })
+            // 保存滑动后的位置
+            downRef.current = { ...downRef.current, offsetX: x, offsetY: y }
+        }
+    }
+    // 兼容鼠标
+    const mouseUp = () => {
+        downRef.current = {
+            ...downRef.current, // 保留上一次绘制的位置
+            isDg: false
+        }
+    }
+
+    // 根据参数渲染
+    const updateModelParam = (param: Record<string, string | number>) => {
+        const modelPreciew = previewRef.current?.find((item: any) => item.type === "3D")?.setting || [];
+        const { objName, trackIndex = 1, clipIndex = 0, effectIndex = 0 } = modelPreciew[0] || {};
+        if (objName) {
+            // 通过名称修改
+            displayRef.current?.updateParamByName(objName, param)
+        } else {
+            // 通过下标修改
+            displayRef.current?.updateRender(trackIndex, clipIndex, effectIndex, param);
+        }
+    }
+
+    const animate = () => {
+        if (TWEEN.update()) {
+            requestFrame(animate.bind(null));
+        }
+    };
+
+    const tween = (original: number, target: number) => {
+        TWEEN.removeAll();
+        new TWEEN.Tween({
+            stemp: original
+        })
+            .to({
+                stemp: target
+            }, 500)
+            .easing(TWEEN.Easing.Cubic.Out)
+            .onUpdate(tween => {
+                updateModelParam({ "0:Scale": tween.stemp })
+            }).start();
+        animate();
+    }
+
+    // 鼠标滚动
+    const mousewheel = (e) => {
+        if (e.wheelDelta) {
+            if (e.wheelDelta < 0 && stemp > minSize) {
+                tween(stemp, stemp * 0.95);
+                stemp *= 0.95;
+            } else if (e.wheelDelta > 0 && stemp < maxSize) {
+                tween(stemp, stemp * 1.05);
+                stemp *= 1.05;
+            }
+        }
+    }
+
     return (
-        <div className="dc-display-box">
-            <div className={`dc-canvas-box ${displayRadio === "2D"
-                ? "display-model"
-                : ""
-                } ${mockupList.length > 1 ? 'show-slider' : ''}`}>
-                <canvas ref={canvasRef} id="canvas"></canvas>
+        <div className="dc-display-box" id="main-container">
+            <div
+                ref={boxRef}
+                className={`dc-canvas-box ${displayRadio === "2D" ? "display-model" : ""} ${mockupList.length > 1 ? 'show-slider' : ''}`}>
+                <canvas
+                    onMouseDown={mouseDown}
+                    onMouseMove={mouseMove}
+                    onMouseUp={mouseUp}
+                    ref={canvasRef}
+                    id="canvas">
+                </canvas>
             </div>
             <div className={`tab-container ${is2d ? 'disabled' : ''}`}>
                 <Radio.Group
@@ -263,6 +405,6 @@ const DisplayCanvas: React.FC = () => {
             </div>
         </div>
     )
-}
+})
 
 export default DisplayCanvas

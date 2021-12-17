@@ -3,6 +3,10 @@ import axios from 'axios';
 import PubSub from 'pubsub-js'
 import { toJS } from 'mobx';
 
+/**
+ * JS 操作 C/C++ 相关API
+ * @interface UitlsProps
+ */
 interface UitlsProps {
     nativeTimelineLoadConfig: (file: string, path: string) => boolean;
     nativeTimelineUpdateParam: (effect: number, param: string) => void;
@@ -25,6 +29,15 @@ interface UitlsProps {
     nativeSetMessageCallback: (callback: number) => void;
 }
 
+enum ModelObject { // 自增长值
+    none = -1,
+    timeline,
+    track,
+    clip,
+    effect,
+    transition
+}
+
 export class Display {
     private uitls?: UitlsProps
     private isWasmLoaded: boolean = false
@@ -34,22 +47,21 @@ export class Display {
     private effectData: any
     private twoDData?: ArrayBuffer
     constructor(canvas: HTMLCanvasElement) {
-        console.log('=====重新进入')
         window.Module = {
             canvas: canvas, // 传递canvas过去，实现webgl绘制
             onRuntimeInitialized: () => {
+                console.log('wasm初始化挂在成功')
                 this.isWasmLoaded = true
                 const { FS, IDBFS } = window
-                console.timeEnd("########loadWasm")
-                console.log('wasm初始化挂在成功')
                 // 使用IndexDB 
                 FS.mkdir("/data"); // 存储目录
-                FS.mount(IDBFS, {}, "/data"); // 挂在IndexDB,
+                FS.mount(IDBFS, {}, "/data"); // 使用IndexDB存储文件,
                 FS.syncfs(true, function (err: Error) { // syncfs()方法进行内存数据与IndexedDB的双向同步
                     console.log("FS ERROR", err);
                 });
                 this.onWasmLoad();
                 this.openEffect()
+                console.timeEnd("########loadWasm")
             }
         }
     }
@@ -137,21 +149,37 @@ export class Display {
     private onWasmLoad() {
         const { Module } = window;
         this.uitls = {
+            // 加载sky文件
             nativeTimelineLoadConfig: Module.cwrap("nativeTimelineLoadConfig", "bool", ["string", "string",]),
+            // 更新Effect下的信息
             nativeTimelineUpdateParam: Module.cwrap("nativeTimelineUpdateParam", null, ["number", "string"]),
+            // 根据下标找到 TrackList
             nativeTimelineGetTrackAt: Module.cwrap("nativeTimelineGetTrackAt", "number", ["number"]),
+            // 根据下标Clip
             nativeTimelineGetClipAt: Module.cwrap("nativeTimelineGetClipAt", "number", ["number", "number"]),
+            // 根据下标找到Effect
             nativeTimelineGetEffectAt: Module.cwrap("nativeTimelineGetEffectAt", "number", ["number", "number"]),
+            // 解压zip文件
             nativeUnzip: Module.cwrap("nativeUnzip", "bool", ["string", "string"]),
+            // 
             nativeSnapshot: Module.cwrap("nativeSnapshot", null, ["number", "string", "number"]),
+            // 修改
             nativeSeek: Module.cwrap("nativeSeek", null, ["number"]),
+            // 修改背景色
             nativeSetBackgroundColor: Module.cwrap("nativeSetBackgroundColor", null, ["number", "number", "number", "number",]),
+            // 根据name 修改数据
             nativeTimelineUpdateBinaryParam: Module.cwrap("nativeTimelineUpdateBinaryParam", null, ["number", "string", "number", "number", "number"]),
+            // 开始渲染
             nativePlay: Module.cwrap('nativePlay', null, null),
+            // 初始化数据
             nativeInit: Module.cwrap('nativeInit', "bool", ['number', 'number']),
+            // 重置数据
             nativeReset: Module.cwrap("nativeReset", null, null),
+            // 监听窗口变化
             nativeResize: Module.cwrap('nativeResize', null, ['number', 'number']),
+            // 根据Effect name查找effect 对象
             nativeTimelineFindObjectByName: Module.cwrap('nativeTimelineFindObjectByName', "number", ["string"]),
+            // 
             nativeTimelineGetObjectType: Module.cwrap("nativeTimelineGetObjectType", "number", ["number"]),
             nativeClipUpdateResource: Module.cwrap("nativeClipUpdateResource", null, ["number", "string"]),
             nativeSetLogCallback: Module.cwrap("nativeSetLogCallback", null, ["number"]),
@@ -203,7 +231,6 @@ export class Display {
             console.time('###openLowEffect')
             // C/C++中写入文件
             FS.writeFile(`${this.dirName}.zip`, this.effectData);
-            console.log(this.dirName)
             // 调用syncfs异步函数。判断是否成功
             FS.syncfs((err: Error) => {
                 console.log("syncfs success?" + (!err ? "YES" : "NO"));
@@ -278,8 +305,8 @@ export class Display {
                 }
                 switch (it.paramType) {
                     case "binary":
+
                         this.uitls?.nativeTimelineUpdateBinaryParam(effect, it.filterIndex + ":" + it.paramName, settingInfo["binary"].byteOffset, width, height);
-                        // settingInfo["binary"] = null;
                         break;
                     case "randomNum":
                         const r = Math.floor(Math.random() * 99999);
@@ -345,7 +372,7 @@ export class Display {
     }
 
     /**
-     * 切换2d样板
+     * 修改seek的值, 指的是当前effect下的参数seek值
      * @param {number} seekNumber
      * @memberof Display
      */
@@ -390,10 +417,25 @@ export class Display {
     clearData() {
         const { FS } = window;
         delete this.effectData;
+        delete this.twoDData
         FS.unmount("/data"); // 卸载
         FS.rmdir("/data"); // 删除
-        // this.uitls?.nativeReset();
         this.isWasmLoaded = false;
         this.isZipLoaded = false
+    }
+
+    /**
+     *  根据effect的name查找当前的effect对象,然后更新ofParam数据
+     * @param {string} objName
+     * @param {Record<any, any>} param
+     * @memberof Display
+     */
+    updateParamByName(objName: string, param: Record<any, any>) {
+        // 根据name 获取effect 
+        const obj = this.uitls?.nativeTimelineFindObjectByName(objName) || 0;
+        const type = this.uitls?.nativeTimelineGetObjectType(obj);
+        if (type === ModelObject.effect) {
+            this.uitls?.nativeTimelineUpdateParam(obj, JSON.stringify({ ofParam: param }));
+        }
     }
 }
