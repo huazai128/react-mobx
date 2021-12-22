@@ -117,14 +117,7 @@ const DisignStyle: React.FC = () => {
         PubSub.subscribe('addMap', async (msg, { prvId, nextId }) => {
             // 判断当前是否绘制
             if (!canvas.isEmpty()) {
-                const img = getImage();
-                const imageData = await loadImage(img);
-                // 保存绘制图片信息
-                handleTmpChange(prvId, {
-                    data: imageData.data,
-                    width: sizes[0],
-                    height: sizes[1],
-                });
+                saveMap(prvId)
                 if (nextId) {
                     // 保存当前的数据
                     canvasMap.current.set(prvId, canvas.toDatalessJSON())
@@ -148,6 +141,7 @@ const DisignStyle: React.FC = () => {
                     })
                     canvas.add(shape)
                     canvas.renderAll();
+                    // saveMap(nextId)
                 }
             }
         })
@@ -159,7 +153,7 @@ const DisignStyle: React.FC = () => {
         PubSub.publish('renderWasm', img)
     })
 
-    // 获取绘制图片
+    // 获取绘制图片,
     const getImage = () => {
         const ext = 'png';
         const base64 = canvasRef.current.toDataURL({
@@ -167,6 +161,18 @@ const DisignStyle: React.FC = () => {
             enableRetinaScaling: true
         })
         return base64
+    }
+
+    // 更新到makeMap下
+    const saveMap = async (id: string) => {
+        const img = getImage()
+        const imageData = await loadImage(img);
+        // 保存绘制图片信息
+        handleTmpChange(id, {
+            data: imageData.data,
+            width: sizes[0],
+            height: sizes[1],
+        });
     }
 
     return (

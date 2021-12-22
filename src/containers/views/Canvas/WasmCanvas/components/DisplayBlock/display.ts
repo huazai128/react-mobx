@@ -15,6 +15,7 @@ interface UitlsProps {
     nativeTimelineGetEffectAt: (clip: number, effect: number) => number;
     nativeSetBackgroundColor: (r: number, g: number, b: number, a: number) => void;
     nativeUnzip: (file: string, path: string) => boolean;
+    // 合成图片： key: number:  filename: string 文件路径 quality: number: 导出图片的质量
     nativeSnapshot: (key: number, filename: string, quality: number) => void;
     nativeSeek: (key: number) => void;
     nativeTimelineUpdateBinaryParam: (effect: number, key: string, data: number, w: number, h: number) => void;
@@ -161,9 +162,9 @@ export class Display {
             nativeTimelineGetEffectAt: Module.cwrap("nativeTimelineGetEffectAt", "number", ["number", "number"]),
             // 解压zip文件
             nativeUnzip: Module.cwrap("nativeUnzip", "bool", ["string", "string"]),
-            // 
+            // 合成图片；  key: number:  filename: string 文件路径 quality: number: 导出图片的质量
             nativeSnapshot: Module.cwrap("nativeSnapshot", null, ["number", "string", "number"]),
-            // 修改
+            // 修改Seek参数
             nativeSeek: Module.cwrap("nativeSeek", null, ["number"]),
             // 修改背景色
             nativeSetBackgroundColor: Module.cwrap("nativeSetBackgroundColor", null, ["number", "number", "number", "number",]),
@@ -241,8 +242,8 @@ export class Display {
                     this.dirName
                 );
                 this.uitls?.nativePlay();
-                console.timeEnd('###openLowEffect');
                 PubSub.publish('loaded', '3D')
+                console.timeEnd('###openLowEffect');
             });
         }
     }
@@ -280,6 +281,7 @@ export class Display {
      */
     updateWasm(data: Uint8Array, width: number, height: number, settingInfo: any, target?: any) {
         if (settingInfo) {
+            const obj = { ...toJS(settingInfo) } // 这里是直接修改mobx数据，需要浅拷贝
             let effect = 0;
             if (target) {
                 // 获取.sky文件 trackList下标数据
@@ -289,14 +291,13 @@ export class Display {
                 // 获取 effects数组下的某个下标数据
                 effect = this.uitls?.nativeTimelineGetEffectAt(clip, target.effectIndex) || 0;
             }
-            const { paramSettingInfo } = settingInfo;
-            if (settingInfo.binary == undefined) {
+            const { paramSettingInfo } = obj;
+            if (!obj.binary) {
                 // 分配一块内存
                 const ptr = window.Module._malloc(data.byteLength);
-                settingInfo["binaryPtr"] = ptr;
+                obj["binaryPtr"] = ptr;
             }
-
-            settingInfo["binary"] = this.updateWASMHeap(settingInfo["binaryPtr"], data);
+            obj["binary"] = this.updateWASMHeap(obj["binaryPtr"], data);
             paramSettingInfo.forEach((it: {
                 paramType: string; filterIndex: string; paramName: string; objName: string
             }) => {
@@ -305,8 +306,8 @@ export class Display {
                 }
                 switch (it.paramType) {
                     case "binary":
-
-                        this.uitls?.nativeTimelineUpdateBinaryParam(effect, it.filterIndex + ":" + it.paramName, settingInfo["binary"].byteOffset, width, height);
+                        // 修改binary的参数
+                        this.uitls?.nativeTimelineUpdateBinaryParam(effect, it.filterIndex + ":" + it.paramName, obj["binary"].byteOffset, width, height);
                         break;
                     case "randomNum":
                         const r = Math.floor(Math.random() * 99999);
@@ -363,10 +364,10 @@ export class Display {
                     this.dirName
                 );
                 this.uitls?.nativePlay();
+                PubSub.publish('loaded', '2D')
                 console.log('###openHighEffect')
                 console.timeEnd('###openHighEffect');
                 performance.mark('openHighEffectEnd');
-                PubSub.publish('loaded', '2D')
             });
         }
     }
@@ -437,5 +438,17 @@ export class Display {
         if (type === ModelObject.effect) {
             this.uitls?.nativeTimelineUpdateParam(obj, JSON.stringify({ ofParam: param }));
         }
+    }
+
+    /**
+     * 导出
+     * @param {number} seekNumber
+     * @return {*} 
+     * @memberof Display
+     */
+    downloadFileInIndexedDB(seekNumber: number) {
+        this.uitls?.nativeSnapshot(seekNumber, "/data/snapshot_" + parseInt(`${seekNumber}`) + ".png", 100);
+        const data = window.FS.readFile("/data/snapshot_" + parseInt(`${seekNumber}`) + ".png", { encoding: "binary" });
+        return new Blob([data]);
     }
 }

@@ -1,4 +1,4 @@
-import { observable, action, computed } from 'mobx'
+import { observable, action, computed, toJS, runInAction } from 'mobx'
 import { StoreExt } from '@utils/reactExt'
 import autobind from 'autobind-decorator'
 import { pList, tempObj } from './data'
@@ -50,7 +50,9 @@ export class WasmStore extends StoreExt {
      */
     @action
     handleTmpChange(id: string, data: MakeMap) {
-        this.makeMap.set(id, data)
+        runInAction(() => {
+            this.makeMap.set(id, data)
+        })
     }
 }
 

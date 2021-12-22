@@ -44,9 +44,11 @@ const DisplayCanvas: React.FC = observer(() => {
     const tergetRef = useRef<Record<string, any>>() // 存储当前操作对象信息
     const boxRef = useRef<HTMLDivElement>()
     const downRef = useRef<DownModel>(defaultConfig)
+    const infoRef = useRef<Record<string, any>>()
     const [displayRadio, setDisplayRadio] = useState<DisplayType>('3D')
     const [is2d, setIs2d] = useState<boolean>(false) // 当前是否只有2d模式
     const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [is2DLoading, setIs2DLoading] = useState(false)
     const [mockupList, setMockUpList] = useState<Record<string, any>[]>([]); // 存储2d数据
     const [targetSet, setTargetSet] = useState<Record<string, any>>() // 当前
     const { curDisignInfo, tmpInfo, bgColor, pList, curDisignId, makeMap } = useRootStore().wasmStore
@@ -77,7 +79,8 @@ const DisplayCanvas: React.FC = observer(() => {
                 }
             })
             PubSub.subscribe('renderWasm', async (msg, data) => {
-                const imageData = await loadImage(data)
+                // 这里存在闭包缺陷， 导致这里拿到的数据还是旧的curDisignInfo
+                const imageData = await loadImage(data);
                 updateWasm(imageData)
             })
         }
@@ -96,7 +99,6 @@ const DisplayCanvas: React.FC = observer(() => {
 
     // 监听displayRadio的变化
     useEffect(() => {
-        console.log('渲染了3')
         // 这里处理有问题
         if (Object.is(displayRadio, '2D') && isOnce) {
             displayRef.current?.open2DEffect();
@@ -106,17 +108,22 @@ const DisplayCanvas: React.FC = observer(() => {
 
     //  监听targetSet变化，触发重新渲染, 这里包含了已绘制的数据
     useEffect(() => {
-        console.log('渲染了2')
         // 加载完成才能渲染
-        if (targetSet) {
+        if (targetSet && (Object.is(displayRadio, '3D') || (Object.is(displayRadio, '2D') && is2DLoading))) {
             setTimeout(() => {
+                console.log('渲染了22')
                 // 渲染背景
                 renderColor()
                 // 渲染已经绘制的裁片
                 renderAllPic()
             }, 10)
         }
-    }, [targetSet]);
+    }, [targetSet, displayRadio, is2DLoading]);
+
+    // 更新当前绘制的裁片信息
+    useEffect(() => {
+        infoRef.current = toJS(curDisignInfo);
+    }, [JSON.stringify(curDisignInfo)])
 
 
     // 监听切片切换,旋转裁片
@@ -124,14 +131,14 @@ const DisplayCanvas: React.FC = observer(() => {
         console.log('渲染了1')
         // 监听不同位置的下绘制，是改变Y轴
         if (curDisignId) {
-            const { updateParam = {} } = curDisignInfo;
+            const { updateParam = {} } = curDisignInfo; // 这里能拿到最新的curDisignInfo
             if (!(updateParam instanceof Array)) {
                 const { value = '' } = updateParam;
                 // 选择背景旋转角度
                 updateModelParam({ "0:ModelRotY": value, "0:ModelRotX": 0 });
                 downRef.current = { ...downRef.current, offsetX: Number(value), offsetY: 0 }
             }
-            // renderAllPic()
+            renderAllPic()
         }
         // 渲染已经绘制的
     }, [curDisignId])
@@ -155,7 +162,6 @@ const DisplayCanvas: React.FC = observer(() => {
         const modelList = preview?.find((item: any) => item.type === "3D")?.setting || [];
         let setObj = modelList[0]
         if (!modelList.length) {
-            console.log('开启2d设置模式')
             setIs2d(true)
             setDisplayRadio('2D')
             setObj = mockList[0]
@@ -167,7 +173,7 @@ const DisplayCanvas: React.FC = observer(() => {
 
     // 渲染3D 模型, 这里值渲染当前操作的裁片
     const updateWasm = (imageData?: ImageData) => {
-        const { settingInfo } = curDisignInfo
+        const { settingInfo } = infoRef.current || curDisignInfo //
         const canvas = document.querySelector('#styleCanvas') as HTMLCanvasElement
         if (!imageData) {
             imageData = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height);
@@ -176,6 +182,7 @@ const DisplayCanvas: React.FC = observer(() => {
         displayRef.current.updateWasm(data, canvas.width, canvas.height, settingInfo, tergetRef.current) // 2d模式下不传递tergetRef.current
     }
 
+
     // 渲染2d 模型
     const loadTwoDRender = () => {
         loadMocksImage();
@@ -183,6 +190,7 @@ const DisplayCanvas: React.FC = observer(() => {
 
     // 加载2D 图片数据
     const loadMocksImage = () => {
+        console.time('###loadMockImage');
         const mockList = previewRef.current?.find((item: any) => item.type === "2D")?.setting || [];
         const prepList = mockList.map(
             (item: any) =>
@@ -210,6 +218,7 @@ const DisplayCanvas: React.FC = observer(() => {
         if (prepList.length) {
             Promise.all(prepList)
                 .then(() => {
+                    setIs2DLoading(true);  // 等待2D资源加载完成
                     console.log("all input load");
                     console.timeEnd('###loadMockImage');
                     performance.mark('loadMockImageEnd');
@@ -230,6 +239,7 @@ const DisplayCanvas: React.FC = observer(() => {
         if (setting && setting.length) {
             onSeekClick(setting[0]);
         }
+
         setDisplayRadio(e.target.value)
     }, [])
 
@@ -256,6 +266,7 @@ const DisplayCanvas: React.FC = observer(() => {
         const updateParam = colorConfigs?.updateParam;
         const materialList = colorConfigs?.materialList;
         let modelPathName = "";
+        // 获取颜色值
         const targetColorItem = materialList?.find(m => `#${m.hex}`.toLowerCase() === bgColor.toLowerCase());
         const rgbColor = targetColorItem?.paramValue || '';
         const rgbName = targetColorItem?.name || '';
