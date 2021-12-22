@@ -86,6 +86,7 @@ const DisplayCanvas: React.FC = observer(() => {
         init();
         return () => {
             displayRef.current.clearData();
+            PubSub.clearAllSubscriptions();
             boxRef.current.removeEventListener('mousewheel', mousewheel);
             displayRef.current = null
             previewRef.current = null
@@ -95,6 +96,7 @@ const DisplayCanvas: React.FC = observer(() => {
 
     // 监听displayRadio的变化
     useEffect(() => {
+        console.log('渲染了3')
         // 这里处理有问题
         if (Object.is(displayRadio, '2D') && isOnce) {
             displayRef.current?.open2DEffect();
@@ -104,6 +106,7 @@ const DisplayCanvas: React.FC = observer(() => {
 
     //  监听targetSet变化，触发重新渲染, 这里包含了已绘制的数据
     useEffect(() => {
+        console.log('渲染了2')
         // 加载完成才能渲染
         if (targetSet) {
             setTimeout(() => {
@@ -118,6 +121,7 @@ const DisplayCanvas: React.FC = observer(() => {
 
     // 监听切片切换,旋转裁片
     useEffect(() => {
+        console.log('渲染了1')
         // 监听不同位置的下绘制，是改变Y轴
         if (curDisignId) {
             const { updateParam = {} } = curDisignInfo;
@@ -127,7 +131,7 @@ const DisplayCanvas: React.FC = observer(() => {
                 updateModelParam({ "0:ModelRotY": value, "0:ModelRotX": 0 });
                 downRef.current = { ...downRef.current, offsetX: Number(value), offsetY: 0 }
             }
-            renderAllPic()
+            // renderAllPic()
         }
         // 渲染已经绘制的
     }, [curDisignId])
@@ -169,7 +173,7 @@ const DisplayCanvas: React.FC = observer(() => {
             imageData = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height);
         }
         const data = new Uint8Array(imageData.data)
-        displayRef.current.updateWasm(data, canvas.width, canvas.height, settingInfo, tergetRef.current)
+        displayRef.current.updateWasm(data, canvas.width, canvas.height, settingInfo, tergetRef.current) // 2d模式下不传递tergetRef.current
     }
 
     // 渲染2d 模型
@@ -280,18 +284,22 @@ const DisplayCanvas: React.FC = observer(() => {
 
     // 渲染已绘制的数据 这个包含已绘制的数据
     const renderAllPic = () => {
-        // 循环已经绘制的区域数据
-        for (let [key, value] of makeMap) {
-            const obj = pList.find((item) => item.id == key);
-            const data = new Uint8Array(value.data);
-            console.log(data, 'data', tergetRef.current)
-            displayRef.current?.updateWasm(
-                data,
-                value.width,
-                value.height,
-                obj.settingInfo,
-                tergetRef.current
-            );
+        if (!isLoading) return false
+        if (!!makeMap.size) {
+            // 循环已经绘制的区域数据
+            for (let [key, value] of makeMap) {
+                const obj = pList.find((item) => item.id == key);
+                const data = new Uint8Array(value.data);
+                displayRef.current?.updateWasm(
+                    data,
+                    value.width,
+                    value.height,
+                    obj.settingInfo,
+                    tergetRef.current
+                );
+            }
+        } else {
+            updateWasm();
         }
         displayRef.current?.updateRender(1, 0, 0, { "0:Scale": 0.5 })
     }

@@ -1,3 +1,5 @@
+import { NumberLiteralTypeAnnotation } from "@babel/types";
+
 /*
  * @Author: your name
  * @Date: 2020-04-16 15:37:50
@@ -111,21 +113,46 @@ export const hexToRgba = (hex: string) => {
 };
 
 
+
 /**
-* 把图片转成ImageData
-* @param {string} src
-* @return {*} 
-*/
-export const loadImage = (src: string) => {
+ * 把图片转成ImageData
+ * @param {string} src
+ * @param {number} [width]
+ * @param {number} [height]
+ * @return {*} 
+ */
+export const loadImage = (src: string, width?: number, height?: number) => {
     return new Promise<ImageData>(async (resolve, reject) => {
         const img = await loadImg(src)
-        const canvas = document.createElement('canvas');
-        canvas.width = img.width;
-        canvas.height = img.height;
+        const canvas: HTMLCanvasElement = document.createElement('canvas');
+        canvas.width = width || img.width;
+        canvas.height = height || img.height;
         const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0);
-        const imgData = ctx.getImageData(0, 0, img.width, img.height);
+        ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
+        const imgData = ctx?.getImageData(0, 0, canvas.width, canvas.height);
         canvas.remove();
-        resolve(imgData)
+        if (imgData) {
+            resolve(imgData)
+        } else {
+            reject('图片转成ImageData失败')
+        }
+    })
+}
+
+
+
+
+
+/**
+* 本地图片或者Blob转成base64格式图片。 可以提供canvas 渲染或者img
+* @param {File} file
+*/
+export const localImageUrl = (file: File | Blob) => {
+    return new Promise<any>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = function (e) {
+            resolve(reader.result)
+        }
     })
 }
