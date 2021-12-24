@@ -441,14 +441,17 @@ export class Display {
     }
 
     /**
-     * 导出
-     * @param {number} seekNumber
+     * 导出图片
+     * @param {number} seekNumber 需要导出图片的下标
      * @return {*} 
      * @memberof Display
      */
     downloadFileInIndexedDB(seekNumber: number) {
+        // 导出图片
         this.uitls?.nativeSnapshot(seekNumber, "/data/snapshot_" + parseInt(`${seekNumber}`) + ".png", 100);
+        // 获取文件
         const data = window.FS.readFile("/data/snapshot_" + parseInt(`${seekNumber}`) + ".png", { encoding: "binary" });
+        console.log(data, 'data')
         return new Blob([data]);
     }
 }

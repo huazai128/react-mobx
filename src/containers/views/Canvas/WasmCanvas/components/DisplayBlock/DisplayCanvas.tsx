@@ -76,6 +76,7 @@ const DisplayCanvas: React.FC = observer(() => {
                     maxSize = 5 * multiple;
                     display.updateRender(1, 0, 0, { "0:Scale": multiple }) // 渲染
                     updateWasm();
+                    PubSub.publish('loadedEnd', true)
                 }
             })
             PubSub.subscribe('renderWasm', async (msg, data) => {

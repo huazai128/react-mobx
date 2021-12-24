@@ -113,7 +113,7 @@ const DisignStyle: React.FC = () => {
             }
         })
 
-        // 监听裁片切换,保存切换前的数据
+        // 监听裁片切换,保存切换前后的数据
         PubSub.subscribe('addMap', async (msg, { prvId, nextId }) => {
             // 判断当前是否绘制
             if (!canvas.isEmpty()) {
@@ -184,7 +184,6 @@ const DisignStyle: React.FC = () => {
 
 const DisignCanvas: React.FC<IProps> = observer(({ }: IProps) => {
     const cvWh = useRef(700)
-    const canvasRef = useRef()
     const { curDisignInfo } = useRootStore().wasmStore
 
     useEffect(() => {

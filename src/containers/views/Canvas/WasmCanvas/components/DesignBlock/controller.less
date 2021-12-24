@@ -1,0 +1,99 @@
+.db-controll-box {
+    width: 282px;
+    background-color: #fff;
+    border: 1px solid #d7d8e5;
+    overflow: hidden;
+
+    .main-action {
+        padding: 24px;
+
+        .technique-container {
+            margin-bottom: 20px;
+
+            h3 {
+                margin-bottom: 8px;
+                font-size: 14px;
+            }
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+
+            &.add {
+                flex-direction: column;
+                height: 158px;
+            }
+
+            .add-btn {
+                width: 100%;
+                height: 46px;
+                border-radius: 4px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+                svg {
+                    fill: currentColor;
+                }
+
+                i {
+                    margin-right: 10px;
+                }
+
+                .canva-icon {
+                    width: 44px;
+                    height: 14px;
+                    margin-left: 4px;
+                    // background-image: url('@/asserts/canva-logo.png');
+                    background-size: contain;
+                }
+            }
+
+            .radio-btn {
+                width: 110px;
+                height: 32px;
+                border-radius: 4px;
+            }
+        }
+
+        .color-container {
+            margin-bottom: 20px;
+
+            h3 {
+                margin-bottom: 14px;
+                font-size: 14px;
+            }
+
+            .checkbox-container {
+                display: flex;
+
+                .check-item {
+                    width: 28px;
+                    height: 28px;
+                    border: 1px solid rgba(0, 0, 0, 0.2);
+                    border-radius: 2px;
+                    padding: 4px;
+                    cursor: pointer;
+                    margin-right: 12px;
+                    border-radius: 50%;
+
+                    .check-icon {
+                        width: 20px;
+                        height: 20px;
+                        // background-image: url('//fashionline-us.oss-us-east-1.aliyuncs.com/websiteStatic/images/icon/check.png');
+                        background-size: contain;
+                        background-repeat: no-repeat;
+                        background-position: center;
+                    }
+                }
+            }
+        }
+
+        .add-container {
+            padding: 20px 0 8px;
+            border-top: 1px solid #d7d8e5;
+        }
+    }
+
+}
